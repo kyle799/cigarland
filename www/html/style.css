@@ -1,3 +1,21 @@
 body{
     background-color: rgb(34, 56, 56);
 }
+.cigar-card {
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: rgb(46, 75, 75);
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+}
+
+img.cigar-image {
+  width: 100%;
+  max-width: 10rem;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  display: flex;
+  margin: 0 auto;
+} 

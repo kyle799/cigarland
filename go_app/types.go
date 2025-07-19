@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/mattn/go-sqlite3"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
+//	"github.com/mattn/go-sqlite3"
+//	"gorm.io/driver/sqlite"
+//
+// "gorm.io/gorm"
 )
 
 type CigarTable struct {
@@ -23,5 +24,10 @@ type CigarTable struct {
 	JohnReview           string `json:"john_review"`
 	KyleRating           int    `json:"kyle_rating"`
 	KyleReview           string `json:"kyle_review"`
+	ImageRef             string `json:"image_ref"`
 	AuthenticHumanReview string `json:"authentic_human_review"`
+}
+
+type CigarCreatePayload struct {
+	CigarInfo CigarTable `json:"cigar_info"`
 }
