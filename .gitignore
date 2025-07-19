@@ -9,7 +9,8 @@
 *.dylib
 *.db
 db/
-
+#cigarland binary
+cigarland_api
 # Test binary, built with `go test -c`
 *.test
 

@@ -16,4 +16,3 @@ func main() {
     router.GET("/test", test)
     router.Run("localhost:8080")
 }
-
