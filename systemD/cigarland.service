@@ -1,0 +1,16 @@
+[Unit]
+Description=Cigarland Web Application
+After=network.target
+
+[Service]
+Type=simple
+User=gouser
+Group=gouser
+WorkingDirectory=/cigarland/go_app
+ExecStart=/cigarland/go_app/cigarland_api
+Restart=on-failure
+RestartSec=5s
+Environment=GIN_MODE=release
+
+[Install]
+WantedBy=multi-user.target
