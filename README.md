@@ -32,9 +32,9 @@ This isn’t just about syntax or schema—it’s about sharpening our tools, im
 ## 🔥 Feature Concepts
 
 - [x] Add cigars with brand, wrapper, country, strength, flavor notes
-- [x] Leave 1–10 star reviews and tasting notes
+- [] Leave 1–10 star reviews and tasting notes
 - [ ] Search, sort, and filter cigars by flavor profile or score
-- [ ] Save shared tasting notes with `@jharmon`
+- [ ] Save shared tasting notes with `@jhohnharmon`
 - [ ] Deployable ANYWHERE
 - [ ] Future: track humidor inventory, humidity/temp over time
 
@@ -64,15 +64,16 @@ This repo explores real-world fundamentals while staying fun:
   "name": "Hemingway Short Story",
   "wrapper": "Cameroon",
   "profile": "Medium",
-  "tastytip": false,
+  "tasty_tip": false,
   "pressed": false,
   "binder": "string",
-  "spicy": false,
-  "rating": 4,
+  "spicy": 7,
+  "kyle_rating": 4,
+  "john_rating": 6,
   "length": 60,
   "ring": 50,
   "review": "Smooth draw, nutty on the front, spice at the end. Perfect burn. Smoked with JHarmon while talking Go interfaces.",
-  "johnreview": "",
-  "kylereview": "",
-  "authentichumanreview": ""
+  "john_review": "",
+  "kyle_review": "",
+  "authentic_human_review": ""
 }
