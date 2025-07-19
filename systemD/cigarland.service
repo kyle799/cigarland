@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User=gouser
-Group=gouser
+Group=cigarland
 WorkingDirectory=/cigarland/go_app
 ExecStart=/cigarland/go_app/cigarland_api
 Restart=on-failure
