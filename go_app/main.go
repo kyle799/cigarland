@@ -1,33 +1,46 @@
 package main
 
 import (
-	// "os"
-	"database/sql"
+	"flag"
 	"fmt"
 	"log"
-	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
-func createdbfile() {
-	db, err := sql.Open("sqlite3", "/cigarland/db/cigar.db")
+func createPath(path string) {
+	err := os.MkdirAll(path, 0o750)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("failure to create %s", err)
 	}
-	defer db.Close()
-}
-
-func test(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "test successful",
-	})
+	log.Printf("Created path %s", path)
 }
 
 func main() {
-	var server string = "localhost:8080"
-	fmt.Printf("starting webserver at %s", server)
-	router := gin.Default()
-	router.GET("/test", test)
-	router.Run(server)
+	ParseArgs()
+	if createDB {
+		fmt.Printf("Starting creation of db\n")
+		createPath(dbPath)
+		tables := CreateTableSchemas()
+		db := OpenDB(dbName)
+		InitializeDBTables(db, tables)
+
+	}
+	if startServer {
+		log.Printf("starting webserver at %s:%d", server, port)
+		router := gin.Default()
+		router.GET("/test", test)
+		router.Run(fmt.Sprintf("%s:%d", server, port))
+	}
+}
+
+func ParseArgs() {
+	flag.BoolVar(&createDB, "create-db", true, "Boolean toggle to create a new DB")
+	flag.BoolVar(&startServer, "start-server", false, "Boolean toggle to start the server")
+	flag.StringVar(&server, "server", "localhost", "Server address")
+	flag.IntVar(&port, "port", 8080, "Port to run the server on")
+	flag.StringVar(&dbPath, "db-path", "/cigarland/db", "Path for database")
+	flag.StringVar(&dbName, "db-name", "cigar.db", "Name of the database file")
+	flag.Parse()
 }
