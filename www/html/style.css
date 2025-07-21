@@ -1,4 +1,4 @@
-body{
+/* body{
     background-color: rgb(34, 56, 56);
 }
 .cigar-card {
@@ -11,11 +11,136 @@ body{
 }
 
 img.cigar-image {
-  width: 100%;
-  max-width: 10rem;
+  float: right;
+  width: 10rem;
   height: auto;
   object-fit: cover;
   border-radius: 8px;
+  margin-left: 1rem;
+  margin-bottom: 0.5rem;
+} */
+/* ─────────  THEME VARIABLES ───────── */
+:root {
+  /* Light mode */
+  --bg-color:           #ffffff;
+  --text-color:         #000000;
+  --nav-bg:             #f4f4f4;
+  --link-hover:         #1976d2;
+  --card-bg:            #f2f2f2;
+  --card-border-color:  #aaaaaa;
+}
+
+[data-theme="dark"] {
+  /* Dark mode (matches your original colours) */
+  --bg-color:           rgb(34, 56, 56);
+  --text-color:         #f6f6f6;
+  --nav-bg:             rgb(46, 75, 75);
+  --link-hover:         #7ab8ff;
+  --card-bg:            rgb(46, 75, 75);
+  --card-border-color:  #888888;
+}
+
+/* ─────────  GLOBAL BASE  ───────── */
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: system-ui, sans-serif;
+  transition: background .25s, color .25s;
+  padding-top: 3.5rem;      /* keeps content below fixed nav */
+}
+
+/* ─────────  TOP NAVIGATION  ───────── */
+.top-nav {
+  position: fixed;
+  inset: 0 0 auto 0;        /* top:0 left:0 right:0 */
+  height: 3.5rem;
+  background: var(--nav-bg);
+  box-shadow: 0 2px 4px rgba(0,0,0,.15);
   display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 1000;
+}
+.nav-list {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0 1.5rem 0 0;
+  padding: 0;
+}
+.nav-list a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+.nav-list li {
+  display: flex;
+  align-items: center;        /* text & slider share a common baseline  */
+}
+
+.nav-list a:hover { color: var(--link-hover); }
+
+.switch {
+  position: relative;
+  width: 48px;
+  height: 24px;
+  flex-shrink: 0;             /* never squashes on narrow screens       */
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; inset: 0;
+  background: #bbb;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background .3s;
+}
+.slider:before {
+  content: "";
+  position: absolute;
+  left: 2px; top: 2px;
+  width: 20px; height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform .3s;
+}
+input:checked + .slider       { background: #4d4d4d; }
+input:checked + .slider:before{ transform: translateX(24px); }
+
+/* ─────────  CIGAR CARDS  ───────── */
+.cigar-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 2px 2px 6px rgba(0,0,0,.10);
+  overflow: hidden;              /* contain floated img */
+}
+
+img.cigar-image {
+  float: right;
+  width: 10rem;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-left: 1rem;
+  margin-bottom: .5rem;
+}
+
+/* ─────────  MAIN CONTAINER  ───────── */
+.content {
+  max-width: 960px;
   margin: 0 auto;
-} 
+  padding: 1rem;
+}
+
+/* ─────────  MOBILE IMPROVEMENTS  ───────── */
+@media (max-width: 700px) {
+  img.cigar-image {
+    float: none;
+    display: block;
+    margin: 1rem auto;
+  }
+}

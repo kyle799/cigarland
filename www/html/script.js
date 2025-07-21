@@ -31,6 +31,7 @@ const cigars = [
   review: "Smooth draw, nutty on the front, spice at the end. Perfect burn. Smoked with JHarmon while talking Go interfaces.",
   john_review: "",
   kyle_review: "",
+  image_ref: "pictures/ArturoFuenteHemming.jpg",
   authentic_human_review: ""},
     { origin: "russiauba",
   brand: "Arturo Fuente",
@@ -49,6 +50,7 @@ const cigars = [
   review: "Smooth draw, nutty on the front, spice at the end. Perfect burn. Smoked with JHarmon while talking Go interfaces.",
   john_review: "",
   kyle_review: "",
+  image_ref: "pictures/ArturoFuenteHemming.2,,jpg.jpg",
   authentic_human_review: ""},
     { origin: "Cuba cigar land",
   brand: "Arturo Fuente",
@@ -72,14 +74,6 @@ const cigars = [
 ];
 
 const app = document.getElementById("app");
-
-const title = document.createElement("h1");
-title.textContent = "Cigar Review Journal";
-app.appendChild(title)
-
-const subtitle = document.createElement("p");
-subtitle.textContent = "Checkout our cigar notes and ratings";
-app.appendChild(subtitle);
 
 const section = document.createElement("section");
 section.id = "reviews";
@@ -131,6 +125,30 @@ card.appendChild(img);
 
 app.appendChild(section);
 
-const footer = document.createElement("footer");
-footer.textContent = "Made by Kyle & JHarmon";
-app.appendChild(footer);
+/* ============ DARK‑MODE HANDLER ============ */
+const themeSwitch   = document.getElementById('themeSwitch');
+const prefersDarkMq = window.matchMedia('(prefers-color-scheme: dark)');
+
+/* Apply a theme and reflect it on the switch */
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  themeSwitch.checked = (theme === 'dark');
+}
+
+/* Initialize on load */
+(function initTheme() {
+  const stored = localStorage.getItem('theme');
+  const initial = stored || (prefersDarkMq.matches ? 'dark' : 'light');
+  applyTheme(initial);
+})();
+
+/* React to user toggle */
+themeSwitch.addEventListener('change', () => {
+  applyTheme(themeSwitch.checked ? 'dark' : 'light');
+});
+
+/* React to OS theme changes live */
+prefersDarkMq.addEventListener('change', e => {
+  if (!localStorage.getItem('theme')) applyTheme(e.matches ? 'dark' : 'light');
+});
