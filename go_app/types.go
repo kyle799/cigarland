@@ -7,7 +7,7 @@ import (
 // "gorm.io/gorm"
 )
 
-type CigarTable struct {
+type Cigar struct {
 	Brand                string `gorm:"primaryKey" json:"brand"`
 	Name                 string `gorm:"primaryKey" json:"name"`
 	Wrapper              string `json:"wrapper"`
@@ -29,5 +29,5 @@ type CigarTable struct {
 }
 
 type CigarCreatePayload struct {
-	CigarInfo CigarTable `json:"cigar_info"`
+	Cigars []*Cigar `json:"cigar_list"`
 }
