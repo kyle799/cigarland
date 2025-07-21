@@ -7,7 +7,7 @@ Type=simple
 User=gouser
 Group=cigarland
 WorkingDirectory=/cigarland/go_app
-ExecStart=/cigarland/go_app/cigarland_api -start-server -port 8080 -server localhost
+ExecStart=/cigarland/go_app/cigarland_api -create-db -start-server -port 8080 -server localhost
 Restart=on-failure
 RestartSec=5s
 Environment=GIN_MODE=release
