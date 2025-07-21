@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -42,10 +43,28 @@ func InitializeDBTables(db *gorm.DB, tableSchemas []any) {
 }
 
 func HandleCreateCigar(ctx *gin.Context, db *gorm.DB) {
-	bodyContent := make([]byte, ctx.Request.ContentLength)
-	ctx.Request.Body.Read(bodyContent)
+	log.Printf("receiving request to insert cigar")
+	log.Printf("making byte slice from requst content length: %d", ctx.Request.ContentLength)
+	// bodyContent := make([]byte, ctx.Request.ContentLength)
+	log.Printf("reading request body into byte slice")
+	bodyContent, err := io.ReadAll(ctx.Request.Body)
+	if err != nil {
+		log.Printf("Error reading from request body: %s", err)
+	}
+	// log.Printf("Read bytes from requeset body: %d", readBytes)
+	log.Printf("Request Body: %s", bodyContent)
+	log.Printf("creating cigar payload struct")
 	cigarCreatePayload := CigarCreatePayload{}
-	_ = json.Unmarshal(bodyContent, &cigarCreatePayload)
-	cigarInfo := cigarCreatePayload.CigarInfo
-	db.Create(cigarInfo)
+	log.Printf("unmarshaling payload into cigarpayload struct")
+	err = json.Unmarshal(bodyContent, &cigarCreatePayload)
+	if err != nil {
+		log.Printf("error unmarshaling json into cigarCreatePayload struct: %s", err)
+	} else {
+		log.Printf("CigarCreatePayload: %+v", cigarCreatePayload)
+	}
+	cigarInfo := cigarCreatePayload.Cigars
+	for _, cigar := range cigarInfo {
+		log.Printf("Creating cigar: %+v", *cigar)
+		db.Create(cigar)
+	}
 }
