@@ -95,7 +95,7 @@ card.appendChild(img);
     <p><strong>Spicy Level:</strong> ${cigar.spicy}/10</p>
     <p><strong>Rating:</strong> ${cigar.rating}/10</p>
     <p><strong>Kyle:</strong> ${cigar.kyle_rating}/10 | <strong>John:</strong> ${cigar.john_rating}/10</p>
-    <p><strong>Length:</strong> ${cigar.length} min | <strong>Ring Gauge:</strong> ${cigar.ring}</p>
+    <p><strong>Length:</strong> ${cigar.length} mm | <strong>Ring Gauge:</strong> ${cigar.ring}</p>
     <p><strong>Review:</strong> ${cigar.review || "No review yet."}</p>
   `;
 
