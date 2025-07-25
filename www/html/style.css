@@ -1,59 +1,36 @@
-/* body{
-    background-color: rgb(34, 56, 56);
-}
-.cigar-card {
-  border: 1px solid #aaa;
-  border-radius: 6px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  background: rgb(46, 75, 75);
-  box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
-}
-
-img.cigar-image {
-  float: right;
-  width: 10rem;
-  height: auto;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-left: 1rem;
-  margin-bottom: 0.5rem;
-} */
-/* ─────────  THEME VARIABLES ───────── */
 :root {
   /* Light mode */
   --bg-color:           #ffffff;
   --text-color:         #000000;
   --nav-bg:             #f4f4f4;
-  --link-hover:         #1976d2;
+  --link-hover:         #7ab8ff;
   --card-bg:            #f2f2f2;
   --card-border-color:  #aaaaaa;
 }
 
 [data-theme="dark"] {
-  /* Dark mode (matches your original colours) */
+  /* Dark mode */
   --bg-color:           rgb(34, 56, 56);
   --text-color:         #f6f6f6;
   --nav-bg:             rgb(46, 75, 75);
-  --link-hover:         #7ab8ff;
+  --link-hover:         #63979b;
   --card-bg:            rgb(46, 75, 75);
   --card-border-color:  #888888;
 }
 
-/* ─────────  GLOBAL BASE  ───────── */
-html, body { height: 100%; margin: 0; }
+html, body { height: 100%; margin: .5rem; }
 body {
   background: var(--bg-color);
   color: var(--text-color);
   font-family: system-ui, sans-serif;
   transition: background .25s, color .25s;
-  padding-top: 3.5rem;      /* keeps content below fixed nav */
+  padding-top: 3.5rem;
+
 }
 
-/* ─────────  TOP NAVIGATION  ───────── */
 .top-nav {
   position: fixed;
-  inset: 0 0 auto 0;        /* top:0 left:0 right:0 */
+  inset: 0 0 auto 0;
   height: 3.5rem;
   background: var(--nav-bg);
   box-shadow: 0 2px 4px rgba(0,0,0,.15);
@@ -76,7 +53,7 @@ body {
 }
 .nav-list li {
   display: flex;
-  align-items: center;        /* text & slider share a common baseline  */
+  align-items: center;
 }
 
 .nav-list a:hover { color: var(--link-hover); }
@@ -85,7 +62,7 @@ body {
   position: relative;
   width: 48px;
   height: 24px;
-  flex-shrink: 0;             /* never squashes on narrow screens       */
+  flex-shrink: 0;
 }
 
 .switch input { opacity: 0; width: 0; height: 0; }
@@ -108,7 +85,6 @@ body {
 input:checked + .slider       { background: #4d4d4d; }
 input:checked + .slider:before{ transform: translateX(24px); }
 
-/* ─────────  CIGAR CARDS  ───────── */
 .cigar-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border-color);
@@ -116,7 +92,7 @@ input:checked + .slider:before{ transform: translateX(24px); }
   padding: 1rem;
   margin-bottom: 1rem;
   box-shadow: 2px 2px 6px rgba(0,0,0,.10);
-  overflow: hidden;              /* contain floated img */
+  overflow: hidden;
 }
 
 img.cigar-image {
@@ -129,18 +105,91 @@ img.cigar-image {
   margin-bottom: .5rem;
 }
 
-/* ─────────  MAIN CONTAINER  ───────── */
 .content {
   max-width: 960px;
   margin: 0 auto;
   padding: 1rem;
 }
 
-/* ─────────  MOBILE IMPROVEMENTS  ───────── */
 @media (max-width: 700px) {
   img.cigar-image {
     float: none;
     display: block;
     margin: 1rem auto;
   }
+}
+
+.cigar-card > summary {
+  list-style: none;
+  cursor: pointer;
+  margin: 0;
+}
+
+.cigar-card > summary h2 {
+  display: inline-block;
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.cigar-card[open] > summary h2 {
+  color: var(--link-hover);
+}
+
+.cigar-body {
+  animation: fadeDown 2500ms ease;
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.login-form {
+  max-width: 360px;
+  margin: 2rem auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: 6px;
+  padding: 2rem;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+}
+.login-form h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: var(--text-color);
+}
+.login-form .form-group {
+  margin-bottom: 1rem;
+}
+.login-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+.login-form input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  transition: border-color .25s;
+}
+.login-form input:focus {
+  border-color: var(--link-hover);
+  outline: none;
+}
+.login-form button {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--link-hover);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter .2s;
+}
+.login-form button:hover {
+  filter: brightness(0.9);
 }
