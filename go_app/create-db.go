@@ -42,6 +42,10 @@ func InitializeDBTables(db *gorm.DB, tableSchemas []any) {
 	}
 }
 
+/*
+HandleCreateCigar Creates cigar entries from a gin context and a target database
+It wants a list of cigars with the json key cigar_list provided in the request payload
+*/
 func HandleCreateCigar(ctx *gin.Context, db *gorm.DB) {
 	log.Printf("receiving request to insert cigar")
 	log.Printf("making byte slice from requst content length: %d", ctx.Request.ContentLength)
@@ -67,4 +71,17 @@ func HandleCreateCigar(ctx *gin.Context, db *gorm.DB) {
 		log.Printf("Creating cigar: %+v", *cigar)
 		db.Create(cigar)
 	}
+}
+
+/*
+ */
+func HandleQueryCigarTable(ctx *gin.Context) {
+	cigars := QueryCigarTable(cigarDB)
+	ctx.JSON(200, cigars)
+}
+
+func QueryCigarTable(db *gorm.DB) []*Cigar {
+	cigars := []*Cigar{}
+	db.Find(&cigars)
+	return cigars
 }

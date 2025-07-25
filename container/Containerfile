@@ -1,0 +1,12 @@
+from ubuntu/nginx:latest
+
+
+run mkdir -p /etc/nginx/sites-enabled; mkdir -p /cigarland/db; rm -rf /etc/nginx/sites-enabled/*
+copy files/nginx/nginx.conf /etc/nginx/nginx.conf 
+copy files/nginx/cigarland /etc/nginx/sites-enabled/cigarland 
+copy files/cigarland_api /cigarland/
+run chmod 755 /cigarland/cigarland_api
+
+entrypoint /cigarland/cigarland_api -start-server -create-db -db-path /cigarland/db -db-name cigar.db -server localhost & nginx -g 'daemon off;'
+
+
