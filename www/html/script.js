@@ -73,82 +73,85 @@ const cigars = [
   authentic_human_review: ""}
 ];
 
-const app = document.getElementById("app");
-
+const app     = document.getElementById("app");
 const section = document.createElement("section");
-section.id = "reviews";
+section.id    = "reviews";
+app.appendChild(section);
 
-cigars.forEach(cigar =>{
-  const card = document.createElement("div");
+cigars.forEach(cigar => {
 
-  card.className = "cigar-card";
-  const img = document.createElement("img");
-  img.src = cigar.image;
+  /* ── card container ────────────────── */
+  const details = document.createElement("details");
+  details.className = "cigar-card";      // keeps your card styling
 
-card.appendChild(img);
-  card.innerHTML = `
-    <h2>${cigar.brand} -- ${cigar.name}</h2>
-    <img class="cigar-image" src="${cigar.image_ref}" alt="${cigar.name}">
-    <p><strong>Origin:</strong> ${cigar.origin}</p>
-    <p><strong>Wrapper:</strong> ${cigar.wrapper}</p>
-    <p><strong>Profile:</strong> ${cigar.profile}</p>
-    <p><strong>Spicy Level:</strong> ${cigar.spicy}/10</p>
-    <p><strong>Rating:</strong> ${cigar.rating}/10</p>
-    <p><strong>Kyle:</strong> ${cigar.kyle_rating}/10 | <strong>John:</strong> ${cigar.john_rating}/10</p>
-    <p><strong>Length:</strong> ${cigar.length} min | <strong>Ring Gauge:</strong> ${cigar.ring}</p>
-    <p><strong>Review:</strong> ${cigar.review || "No review yet."}</p>
+  /* ── summary (visible when collapsed) ─*/
+  const summary = document.createElement("summary");
+  summary.innerHTML = `<h2>${cigar.brand} — ${cigar.name}</h2>`;
+  details.appendChild(summary);
+
+  /* ── body (revealed when open) ─────── */
+  const body = document.createElement("div");
+  body.className = "cigar-body";
+  body.innerHTML = `
+      <img class="cigar-image" src="${cigar.image_ref}" alt="${cigar.name}">
+      <p><strong>Origin:</strong> ${cigar.origin}</p>
+      <p><strong>Wrapper:</strong> ${cigar.wrapper}</p>
+      <p><strong>Profile:</strong> ${cigar.profile} |
+         <strong>Pressed:</strong> ${cigar.pressed}</p>
+      <p><strong>Tasty Tip:</strong> ${cigar.tasty_tip}</p>
+      <p><strong>Spicy Level:</strong> ${cigar.spicy}/10</p>
+      <p><strong>Rating:</strong> ${cigar.rating}/10</p>
+      <p><strong>Kyle:</strong> ${cigar.kyle_rating}/10 |
+         <strong>John:</strong> ${cigar.john_rating}/10</p>
+      <p><strong>Length:</strong> ${cigar.length} mm |
+         <strong>Ring Gauge:</strong> ${cigar.ring}</p>
+      <p><strong>Kyle’s Review:</strong>
+         ${cigar.kyle_review || "No review yet."}</p>
+      <p><strong>John’s Review:</strong>
+         ${cigar.john_review || "No review yet."}</p>
+      <p><strong>General Review:</strong>
+         ${cigar.review || "No review yet."}</p>
+      <p><strong>Authentic Human Review:</strong>
+         ${cigar.authentic_human_review || "No review yet."}</p>
   `;
+  details.appendChild(body);
 
-  app.appendChild(card);
-  // const name = document.createElement("h2");
-  // name.textContent = cigar.name;
-
-  // const rating = document.createElement("p");
-  // rating.innerHTML = `<strong>John's Rating:</strong> ${cigar.rating}`;  
-
-  // const johns_rating = document.createElement("p");
-  // johns_rating.innerHTML = `<strong>John's Rating:</strong> ${cigar.john_review}`;  
-  
-  // const kyles_rating = document.createElement("p");
-  // kyles_rating.innerHTML = `<strong>Kyle's rating:</strong> ${cigar.kyle_rating}`;
-
-  // const notes = document.createElement("p");
-  // notes.innerHTML = `<strong>Tasting Notes:</strong> ${cigar.notes}`;
-
-  // card.appendChild(name)
-  // card.append(johns_rating)
-  // card.append(kyles_rating)
-  // card.append(rating)
-  // card.append(notes)
-  // section.appendChild(card)
+  section.appendChild(details);
 });
 
 app.appendChild(section);
 
-/* ============ DARK‑MODE HANDLER ============ */
+
 const themeSwitch   = document.getElementById('themeSwitch');
 const prefersDarkMq = window.matchMedia('(prefers-color-scheme: dark)');
-
-/* Apply a theme and reflect it on the switch */
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('theme', theme);
   themeSwitch.checked = (theme === 'dark');
 }
-
-/* Initialize on load */
 (function initTheme() {
   const stored = localStorage.getItem('theme');
   const initial = stored || (prefersDarkMq.matches ? 'dark' : 'light');
   applyTheme(initial);
 })();
-
-/* React to user toggle */
 themeSwitch.addEventListener('change', () => {
   applyTheme(themeSwitch.checked ? 'dark' : 'light');
 });
-
-/* React to OS theme changes live */
 prefersDarkMq.addEventListener('change', e => {
   if (!localStorage.getItem('theme')) applyTheme(e.matches ? 'dark' : 'light');
+});
+
+
+
+document.querySelectorAll('.spoiler-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const box = document.getElementById(btn.dataset.target);
+    const isHidden = box.classList.toggle('hidden');
+    if (!isHidden) {
+      /* add animation class only on show */
+      box.classList.add('fade-in');
+      setTimeout(() => box.classList.remove('fade-in'), 250);
+    }
+    btn.textContent = isHidden ? 'Show notes' : 'Hide notes';
+  });
 });
