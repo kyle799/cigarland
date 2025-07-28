@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Personal-sites">
+    <meta name="description" content="Cigar review website">
+    <title>Cigarland</title>
+    <link rel="stylesheet" href="style.css?v=27">
+    <link rel="icon" href="pictures/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <nav class="top-nav">
+        <ul class="nav-list">
+          <li><a href="./index.html">Home</a></li>
+          <li><a href="./cigars.html">Cigars</a></li>
+          <li><a href="./add_cigar.html">Add new cigar</a></li>
+          <li><a href="./login.html">Login</a></li>
+          <li>
+            <label class="switch" title="Toggle dark mode">
+              <input type="checkbox" id="themeSwitch">
+              <span class="slider"></span>
+            </label>
+          </li>
+        </ul>
+      </nav>
+       
+    <h1>Add to Cigar Review Journal</h1>   
+    <div id="add_cigar"></div>
+    <!-- Cigar submission form -->
+<form id="cigarForm">
+  <h2>Submit a New Cigar</h2>
+  <div>
+    <label>Brand: <input type="text" name="brand" required></label>
+    <label>Name: <input type="text" name="name" required></label>
+  </div>
+  <div>
+    <label>Origin: <input type="text" name="origin"></label>
+    <label>Wrapper: <input type="text" name="wrapper"></label>
+    <label>Binder: <input type="text" name="binder"></label>
+  </div>
+  <div>
+    <label>Profile: <input type="text" name="profile"></label>
+    <label>Pressed: <input type="checkbox" name="pressed"></label>
+    <label>Tasty Tip: <input type="checkbox" name="tasty_tip"></label>
+  </div>
+  <div>
+    <label>Spicy Level (0–10): <input type="number" name="spicy" min="0" max="10"></label>
+    <label>Rating (0–10): <input type="number" name="rating" min="0" max="10"></label>
+  </div>
+  <div>
+    <label>Kyle’s Rating: <input type="number" name="kyle_rating" min="0" max="10"></label>
+    <label>John’s Rating: <input type="number" name="john_rating" min="0" max="10"></label>
+  </div>
+  <div>
+    <label>Length (mm): <input type="number" name="length"></label>
+    <label>Ring Gauge: <input type="number" name="ring"></label>
+  </div>
+  <div>
+    <label>Image URL: <input type="text" name="image_ref"></label>
+  </div>
+  <div>
+    <label>Kyle’s Review:<br>
+      <textarea name="kyle_review" rows="2"></textarea>
+    </label>
+  </div>
+  <div>
+    <label>John’s Review:<br>
+      <textarea name="john_review" rows="2"></textarea>
+    </label>
+  </div>
+  <div>
+    <label>General Review:<br>
+      <textarea name="review" rows="2"></textarea>
+    </label>
+  </div>
+  <div>
+    <label>Authentic Human Review:<br>
+      <textarea name="authentic_human_review" rows="2"></textarea>
+    </label>
+  </div>
+  <button type="submit">Submit Cigar</button>
+</form>
+    <script src="js/dark_mode.js?v=1"></script>
+    <script src="js/add_cigar.js?v=.01"></script>
+</body>
+</html>
