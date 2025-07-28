@@ -12,84 +12,51 @@ fetch('https://cigarland.reneau.me/api/test')
   .catch(error => {
     console.error('Fetch error:', error);
   });
-
-const cigars = [
-  { origin: "Cuba",
-  brand: "Arturo Fuente",
-  name: "Hemingway Short Story",
-  wrapper: "Cameroon",
-  profile: "Medium",
-  tasty_tip: false,
-  pressed: false,
-  binder: "string",
-  spicy: 7,
-  rating: 5,
-  kyle_rating: 4,
-  john_rating: 6,
-  length: 60,
-  ring: 50,
-  review: "Smooth draw, nutty on the front, spice at the end. Perfect burn. Smoked with JHarmon while talking Go interfaces.",
-  john_review: "",
-  kyle_review: "",
-  image_ref: "pictures/ArturoFuenteHemming.jpg",
-  authentic_human_review: ""},
-    { origin: "russiauba",
-  brand: "Arturo Fuente",
-  name: "Hemingway Short Story",
-  wrapper: "Cameroon",
-  profile: "Medium",
-  tasty_tip: false,
-  pressed: false,
-  binder: "string",
-  spicy: 7,
-  rating: 5,
-  kyle_rating: 4,
-  john_rating: 6,
-  length: 60,
-  ring: 50,
-  review: "Smooth draw, nutty on the front, spice at the end. Perfect burn. Smoked with JHarmon while talking Go interfaces.",
-  john_review: "",
-  kyle_review: "",
-  image_ref: "pictures/ArturoFuenteHemming.2,,jpg.jpg",
-  authentic_human_review: ""},
-    { origin: "Cuba cigar land",
-  brand: "Arturo Fuente",
-  name: "Hemingway Short Story",
-  wrapper: "Cameroon",
-  profile: "Medium",
-  tasty_tip: false,
-  pressed: false,
-  binder: "string",
-  spicy: 7,
-  rating: 5,
-  kyle_rating: 4,
-  john_rating: 6,
-  length: 60,
-  ring: 50,
-  review: "Smooth draw, nutty on the front, spice at the end. Perfect burn. Smoked with JHarmon while talking Go interfaces.",
-  john_review: "",
-  kyle_review: "",
-  image_ref: "pictures/cigar-00000001.webp",
-  authentic_human_review: ""}
-];
-
-const app     = document.getElementById("app");
-const section = document.createElement("section");
-section.id    = "reviews";
-app.appendChild(section);
-
-cigars.forEach(cigar => {
-
-  /* ── card container ────────────────── */
+  let cigars = [
+      {
+        origin: 'Cuba',
+        brand: 'Arturo Fuente',
+        name: 'Hemingway Short Story',
+        wrapper: 'Cameroon',
+        profile: 'Medium',
+        tasty_tip: false,
+        pressed: false,
+        binder: 'string',
+        spicy: 7,
+        rating: 5,
+        kyle_rating: 4,
+        john_rating: 6,
+        length: 60,
+        ring: 50,
+        review:' Smooth draw, nutty on the front, spice at the end. Perfect burn. Smoked with JHarmon while talking Go interfaces.',
+        john_review: '',
+        kyle_review: '',
+        image_ref: 'pictures/ArturoFuenteHemming.jpg',
+        authentic_human_review: ''
+      }
+    ];
+  window.addEventListener('DOMContentLoaded', loadCigars);
+  async function loadCigars() {
+    try {
+      console.log("loading cigars...")
+      renderCigars(cigars)
+      const res = await fetch('https://cigarland.reneau.me/api/cigars');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      cigars = data;
+      renderCigars(cigars);
+    } catch (err) {
+      console.error('Fetch failed:', err);
+      renderError();
+    }
+  }
+function renderCigars(cigars){
+  cigars.forEach(cigar => {
   const details = document.createElement("details");
-  details.className = "cigar-card";      // keeps your card styling
-
-  /* ── summary (visible when collapsed) ─*/
+  details.className = "cigar-card";
   const summary = document.createElement("summary");
   summary.innerHTML = `<h2>${cigar.brand} — ${cigar.name}</h2>`;
   details.appendChild(summary);
-
-  /* ── body (revealed when open) ─────── */
   const body = document.createElement("div");
   body.className = "cigar-body";
   body.innerHTML = `
@@ -115,13 +82,14 @@ cigars.forEach(cigar => {
          ${cigar.authentic_human_review || "No review yet."}</p>
   `;
   details.appendChild(body);
-
   section.appendChild(details);
 });
-
 app.appendChild(section);
-
-
+}
+const app     = document.getElementById("app");
+const section = document.createElement("section");
+section.id    = "reviews";
+app.appendChild(section);
 const themeSwitch   = document.getElementById('themeSwitch');
 const prefersDarkMq = window.matchMedia('(prefers-color-scheme: dark)');
 function applyTheme(theme) {
@@ -140,18 +108,15 @@ themeSwitch.addEventListener('change', () => {
 prefersDarkMq.addEventListener('change', e => {
   if (!localStorage.getItem('theme')) applyTheme(e.matches ? 'dark' : 'light');
 });
-
-
-
 document.querySelectorAll('.spoiler-toggle').forEach(btn => {
   btn.addEventListener('click', () => {
     const box = document.getElementById(btn.dataset.target);
     const isHidden = box.classList.toggle('hidden');
     if (!isHidden) {
-      /* add animation class only on show */
       box.classList.add('fade-in');
       setTimeout(() => box.classList.remove('fade-in'), 250);
     }
     btn.textContent = isHidden ? 'Show notes' : 'Hide notes';
   });
 });
+console.log("end")
