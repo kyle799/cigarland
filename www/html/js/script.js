@@ -44,6 +44,7 @@ fetch('https://cigarland.reneau.me/api/test')
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       cigars = data;
+      console.log(data[0])
       renderCigars(cigars);
     } catch (err) {
       console.error('Fetch failed:', err);
@@ -63,6 +64,7 @@ function renderCigars(cigars){
       <img class="cigar-image" src="${cigar.image_ref}" alt="${cigar.name}">
       <p><strong>Origin:</strong> ${cigar.origin}</p>
       <p><strong>Wrapper:</strong> ${cigar.wrapper}</p>
+      <p><strong>Binder:</strong> ${cigar.binder}</p>
       <p><strong>Profile:</strong> ${cigar.profile} |
          <strong>Pressed:</strong> ${cigar.pressed}</p>
       <p><strong>Tasty Tip:</strong> ${cigar.tasty_tip}</p>
@@ -90,33 +92,5 @@ const app     = document.getElementById("app");
 const section = document.createElement("section");
 section.id    = "reviews";
 app.appendChild(section);
-const themeSwitch   = document.getElementById('themeSwitch');
-const prefersDarkMq = window.matchMedia('(prefers-color-scheme: dark)');
-function applyTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('theme', theme);
-  themeSwitch.checked = (theme === 'dark');
-}
-(function initTheme() {
-  const stored = localStorage.getItem('theme');
-  const initial = stored || (prefersDarkMq.matches ? 'dark' : 'light');
-  applyTheme(initial);
-})();
-themeSwitch.addEventListener('change', () => {
-  applyTheme(themeSwitch.checked ? 'dark' : 'light');
-});
-prefersDarkMq.addEventListener('change', e => {
-  if (!localStorage.getItem('theme')) applyTheme(e.matches ? 'dark' : 'light');
-});
-document.querySelectorAll('.spoiler-toggle').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const box = document.getElementById(btn.dataset.target);
-    const isHidden = box.classList.toggle('hidden');
-    if (!isHidden) {
-      box.classList.add('fade-in');
-      setTimeout(() => box.classList.remove('fade-in'), 250);
-    }
-    btn.textContent = isHidden ? 'Show notes' : 'Hide notes';
-  });
-});
+
 console.log("end")
