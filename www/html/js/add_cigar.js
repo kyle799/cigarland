@@ -25,10 +25,10 @@ try {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(cigar)
     });
+    console.log(res)
     if (!res.ok) throw new Error(`Server responded ${res.status}`);
-    const created = await res.json();
+    const created = await res;
     console.log('Cigar created:', created);
-
     form.reset();
 } catch (err) {
     console.error('Submission failed:', err);
