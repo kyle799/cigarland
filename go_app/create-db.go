@@ -67,10 +67,29 @@ func HandleCreateCigar(ctx *gin.Context, db *gorm.DB) {
 		log.Printf("CigarCreatePayload: %+v", cigarCreatePayload)
 	}
 	cigarInfo := cigarCreatePayload.Cigars
-	for _, cigar := range cigarInfo {
-		log.Printf("Creating cigar: %+v", *cigar)
-		db.Create(cigar)
+	jsonResponse := make(map[string]any)
+	cigarCount := len(cigarInfo)
+	returnCode := 0
+	if cigarCount > 0 {
+		log.Printf("Creating cigars. Count: %d", cigarCount)
+		dbSession := db.Session(&gorm.Session{CreateBatchSize: cigarCount})
+		result := dbSession.Create(&cigarInfo)
+		if result.Error != nil {
+			jsonResponse["error"] = result.Error
+			jsonResponse["rows_effected"] = result.RowsAffected
+			// ctx.JSON(500, jsonResponse)
+			returnCode = 500
+		} else {
+			jsonResponse["rows_effected"] = result.RowsAffected
+			returnCode = 200
+			// ctx.JSON(200, jsonResponse)
+		}
+	} else {
+		log.Printf("Cigar creation called with no cigars provided in the request")
+		jsonResponse["message"] = "No cigars provided to create/update"
+		returnCode = 200
 	}
+	ctx.JSON(returnCode, jsonResponse)
 }
 
 /*
