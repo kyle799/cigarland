@@ -31,3 +31,10 @@ type Cigar struct {
 type CigarCreatePayload struct {
 	Cigars []*Cigar `json:"cigar_list"`
 }
+
+type SelectionFilter struct {
+	Column   string `json:"column" jsonschema:"required"`
+	Value    string `json:"value" jsonschema:"required"`
+	Operator string `json:"operator" jsonschema:"required"`
+	Logical  string `json:"logical"`
+}
