@@ -40,6 +40,6 @@ type SelectionFilter struct {
 }
 
 type QueryPayload struct {
-	Table   string `json:"table"`
-	Filters string `json:"filters"`
+	Table   string            `json:"table"`
+	Filters []SelectionFilter `json:"filters"`
 }
