@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 
@@ -15,7 +16,38 @@ func MakeDBHandler(db *gorm.DB, handlerFunc func(*gorm.DB, *gin.Context)) func(*
 	}
 }
 
-func QueryHandler(ctx *gin.Context) {
+func QueryHandler(db *gorm.DB, ctx *gin.Context) {
+	bodyContent, readErr := io.ReadAll(ctx.Request.Body)
+	if readErr != nil {
+		responseMap := map[string]string{
+			"message": fmt.Sprintf("Error reading request body: %s", readErr),
+		}
+		response, marshalErr := json.Marshal(responseMap)
+		if marshalErr != nil {
+			ctx.Status(500)
+			fmt.Fprintf(ctx.Writer, "Failed to read request body: %s\nFailed to marshal json response :%s", readErr, marshalErr)
+			return
+		}
+		ctx.Data(500, "application/json", response)
+		return
+	}
+	query := QueryPayload{}
+	unmarshalErr := json.Unmarshal(bodyContent, &query)
+	if unmarshalErr != nil {
+		responseMap := map[string]string{
+			"message": fmt.Sprintf("Failed to unmarshal payload: %s", unmarshalErr),
+		}
+		response, _ := json.Marshal(responseMap)
+		ctx.Data(500, "application/json", response)
+		return
+	}
+	queryResult, _ := QueryDB(db, query.Table, query.Filters...)
+	responseBody, err := json.Marshal(queryResult)
+	if err != nil {
+		ctx.String(500, "application/text", fmt.Sprintf("Error generating query response: %s", err))
+		return
+	}
+	ctx.Data(200, "application/json", responseBody)
 }
 
 func HandleCreateCigar(ctx *gin.Context, db *gorm.DB) {

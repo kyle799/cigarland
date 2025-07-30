@@ -3,15 +3,18 @@ package main
 import (
 	"fmt"
 	"strings"
+
+	"gorm.io/gorm"
 )
 
-func QueryDB(filters ...SelectionFilter) (cigars []*Cigar, qErr error) {
+func QueryDB(db *gorm.DB, table string, filters ...SelectionFilter) (cigars []*Cigar, qErr error) {
+	db = db.Table(table)
 	queryString, queryArgs, err := GenerateDBQuery(filters...)
 	if err != nil {
 		qErr = fmt.Errorf("Error generating query string: %w", err)
 		return nil, qErr
 	}
-	queryDB := cigarDB.Where(queryString, queryArgs...).Find(&cigars)
+	queryDB := db.Where(queryString, queryArgs...).Find(&cigars)
 	if queryDB.Error != nil {
 		qErr = fmt.Errorf("Error querying DB: %w", queryDB.Error)
 		return nil, qErr
