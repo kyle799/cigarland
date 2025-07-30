@@ -34,7 +34,12 @@ type CigarCreatePayload struct {
 
 type SelectionFilter struct {
 	Column   string `json:"column" jsonschema:"required"`
-	Value    string `json:"value" jsonschema:"required"`
+	Value    any    `json:"value" jsonschema:"required"`
 	Operator string `json:"operator" jsonschema:"required"`
 	Logical  string `json:"logical"`
+}
+
+type QueryPayload struct {
+	Table   string `json:"table"`
+	Filters string `json:"filters"`
 }
