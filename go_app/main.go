@@ -6,6 +6,7 @@ import (
 	"log"
 	//"net/url"
 	"os"
+	"path/filepath"
 	//"sync"
 	//"time"
 	"github.com/gin-gonic/gin"
@@ -21,13 +22,13 @@ func createPath(path string) {
 
 func main() {
 	ParseArgs()
+	PopulateValueOperatorMap()
 	if createDB {
 		fmt.Printf("Starting creation of db\n")
 		createPath(dbPath)
 		tables := CreateTableSchemas()
-		cigarDB = OpenDB(dbName)
+		cigarDB = OpenDB(filepath.Join(dbPath, dbName))
 		InitializeDBTables(cigarDB, tables)
-
 	}
 	if startServer {
 		router := gin.Default()

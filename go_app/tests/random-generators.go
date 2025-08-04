@@ -38,9 +38,21 @@ func GenerateRandomIntInRange(rangeFloor int, rangeCeiling int) (int, error) {
 	if rangeCeiling <= rangeFloor {
 		return -1, fmt.Errorf("error: GenerateRandomIntInRange must be provided with a larger ceiling than the floor")
 	}
-	return rand.Int()%(rangeCeiling-rangeFloor) + rangeFloor, nil
+	return rand.Intn(rangeCeiling - rangeFloor), nil
 }
 
 func GenerateRandomBool() bool {
 	return rand.Intn(2) == 1
+}
+
+func GetRandomStringKey[T comparable](m map[string]T) string {
+	keyIdx := rand.Intn(len(m))
+	curIdx := 0
+	for key := range m {
+		if curIdx == keyIdx {
+			return key
+		}
+		curIdx++
+	}
+	return ""
 }

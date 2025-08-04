@@ -5,16 +5,17 @@ import (
 )
 
 var (
-	createDB          bool
-	startServer       bool
-	server            string
-	testCigarCreation bool
-	port              int
-	dbPath            string
-	dbName            string
-	cigarDB           *gorm.DB
-	apiPrefix         string
-	ValueOperatorMap  map[int]map[string]bool
+	createDB           bool
+	startServer        bool
+	server             string
+	testCigarCreation  bool
+	port               int
+	dbPath             string
+	dbName             string
+	cigarDB            *gorm.DB
+	apiPrefix          string
+	ValueOperatorMap   = map[int]map[string]bool{}
+	LogicalOperatorMap = map[string]bool{"AND": true, "OR": true, "": true}
 )
 
 func CreateTableSchemas() []any {

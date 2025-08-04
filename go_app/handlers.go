@@ -16,7 +16,8 @@ func MakeDBHandler(db *gorm.DB, handlerFunc func(*gorm.DB, *gin.Context)) func(*
 	}
 }
 
-func QueryHandler(db *gorm.DB, ctx *gin.Context) {
+func SelectWhereHandler(db *gorm.DB, ctx *gin.Context) {
+	log.Printf("Received request to query the cigar table with a filter")
 	bodyContent, readErr := io.ReadAll(ctx.Request.Body)
 	if readErr != nil {
 		responseMap := map[string]string{
@@ -31,6 +32,7 @@ func QueryHandler(db *gorm.DB, ctx *gin.Context) {
 		ctx.Data(500, "application/json", response)
 		return
 	}
+	log.Printf("Request Body:\n%s", bodyContent)
 	query := QueryPayload{}
 	unmarshalErr := json.Unmarshal(bodyContent, &query)
 	if unmarshalErr != nil {
@@ -41,6 +43,7 @@ func QueryHandler(db *gorm.DB, ctx *gin.Context) {
 		ctx.Data(500, "application/json", response)
 		return
 	}
+	log.Printf("Querying table: %s with: %+v", query.Table, query.Filters)
 	queryResult, _ := QueryDB(db, query.Table, query.Filters...)
 	responseBody, err := json.Marshal(queryResult)
 	if err != nil {
@@ -110,7 +113,9 @@ func HandleQueryCigarTable(db *gorm.DB, ctx *gin.Context) {
 }
 
 func QueryCigarTable(db *gorm.DB) []*Cigar {
+	log.Printf("Received request to query the cigar table")
 	cigars := []*Cigar{}
 	db.Find(&cigars)
+	log.Printf("Number of cigars found: %d", len(cigars))
 	return cigars
 }
