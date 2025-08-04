@@ -1,12 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 
-	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -46,65 +43,67 @@ func InitializeDBTables(db *gorm.DB, tableSchemas []any) {
 HandleCreateCigar Creates cigar entries from a gin context and a target database
 It wants a list of cigars with the json key cigar_list provided in the request payload
 */
-func HandleCreateCigar(ctx *gin.Context, db *gorm.DB) {
-	log.Printf("receiving request to insert cigar")
-	log.Printf("making byte slice from requst content length: %d", ctx.Request.ContentLength)
-	// bodyContent := make([]byte, ctx.Request.ContentLength)
-	log.Printf("reading request body into byte slice")
-	bodyContent, err := io.ReadAll(ctx.Request.Body)
-	if err != nil {
-		log.Printf("Error reading from request body: %s", err)
-	}
-	// log.Printf("Read bytes from requeset body: %d", readBytes)
-	log.Printf("Request Body: %s", bodyContent)
-	log.Printf("creating cigar payload struct")
-	cigarCreatePayload := CigarCreatePayload{}
-	log.Printf("unmarshaling payload into cigarpayload struct")
-	err = json.Unmarshal(bodyContent, &cigarCreatePayload)
-	if err != nil {
-		log.Printf("error unmarshaling json into cigarCreatePayload struct: %s", err)
-	} else {
-		log.Printf("CigarCreatePayload: %+v", cigarCreatePayload)
-	}
-	cigarInfo := cigarCreatePayload.Cigars
-	returnCode, jsonResponse := CreateCigars(db, cigarInfo)
-	ctx.JSON(returnCode, jsonResponse)
-}
-
-func CreateCigars(db *gorm.DB, cigars []*Cigar) (returnCode int, jsonBody map[string]any) {
-	jsonBody = make(map[string]any)
-	cigarCount := len(cigars)
-	if cigarCount > 0 {
-		log.Printf("Creating cigars. Count: %d", cigarCount)
-		dbSession := db.Session(&gorm.Session{CreateBatchSize: cigarCount})
-		result := dbSession.Create(&cigars)
-		if result.Error != nil {
-			jsonBody["error"] = result.Error
-			jsonBody["rows_effected"] = result.RowsAffected
-			// ctx.JSON(500, jsonResponse)
-			returnCode = 500
-		} else {
-			jsonBody["rows_effected"] = result.RowsAffected
-			returnCode = 200
-			// ctx.JSON(200, jsonResponse)
-		}
-	} else {
-		log.Printf("Cigar creation called with no cigars provided in the request")
-		jsonBody["message"] = "No cigars provided to create/update"
-		returnCode = 200
-	}
-	return returnCode, jsonBody
-}
-
-/*
- */
-func HandleQueryCigarTable(ctx *gin.Context) {
-	cigars := QueryCigarTable(cigarDB)
-	ctx.JSON(200, cigars)
-}
-
-func QueryCigarTable(db *gorm.DB) []*Cigar {
-	cigars := []*Cigar{}
-	db.Find(&cigars)
-	return cigars
-}
+//func HandleCreateCigar(ctx *gin.Context, db *gorm.DB) {
+//	log.Printf("receiving request to insert cigar")
+//	log.Printf("making byte slice from requst content length: %d", ctx.Request.ContentLength)
+//	// bodyContent := make([]byte, ctx.Request.ContentLength)
+//	log.Printf("reading request body into byte slice")
+//	bodyContent, err := io.ReadAll(ctx.Request.Body)
+//	if err != nil {
+//		log.Printf("Error reading from request body: %s", err)
+//	}
+//	// log.Printf("Read bytes from requeset body: %d", readBytes)
+//	log.Printf("Request Body: %s", bodyContent)
+//	log.Printf("creating cigar payload struct")
+//	cigarCreatePayload := CigarCreatePayload{}
+//	log.Printf("unmarshaling payload into cigarpayload struct")
+//	err = json.Unmarshal(bodyContent, &cigarCreatePayload)
+//	if err != nil {
+//		log.Printf("error unmarshaling json into cigarCreatePayload struct: %s", err)
+//	} else {
+//		log.Printf("CigarCreatePayload: %+v", cigarCreatePayload)
+//	}
+//	cigarInfo := cigarCreatePayload.Cigars
+//	returnCode, jsonResponse := CreateCigars(db, cigarInfo)
+//	ctx.JSON(returnCode, jsonResponse)
+//}
+//
+//func CreateCigars(db *gorm.DB, cigars []*Cigar) (returnCode int, jsonBody map[string]any) {
+//	jsonBody = make(map[string]any)
+//	cigarCount := len(cigars)
+//	if cigarCount > 0 {
+//		log.Printf("Creating cigars. Count: %d", cigarCount)
+//		dbSession := db.Session(&gorm.Session{CreateBatchSize: cigarCount})
+//		result := dbSession.Create(&cigars)
+//		if result.Error != nil {
+//			jsonBody["error"] = result.Error
+//			jsonBody["rows_effected"] = result.RowsAffected
+//			log.Printf("Insertion error occured: %s", result.Error)
+//			// ctx.JSON(500, jsonResponse)
+//			returnCode = 500
+//		} else {
+//			jsonBody["rows_effected"] = result.RowsAffected
+//			log.Printf("Updated Cigar Table, Rows Affected: %s", result.RowsAffected)
+//			returnCode = 200
+//			// ctx.JSON(200, jsonResponse)
+//		}
+//	} else {
+//		log.Printf("Cigar creation called with no cigars provided in the request")
+//		jsonBody["message"] = "No cigars provided to create/update"
+//		returnCode = 200
+//	}
+//	return returnCode, jsonBody
+//}
+//
+///*
+// */
+//func HandleQueryCigarTable(ctx *gin.Context) {
+//	cigars := QueryCigarTable(cigarDB)
+//	ctx.JSON(200, cigars)
+//}
+//
+//func QueryCigarTable(db *gorm.DB) []*Cigar {
+//	cigars := []*Cigar{}
+//	db.Find(&cigars)
+//	return cigars
+//}

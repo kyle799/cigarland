@@ -5,15 +5,17 @@ import (
 )
 
 var (
-	createDB          bool
-	startServer       bool
-	server            string
-	testCigarCreation bool
-	port              int
-	dbPath            string
-	dbName            string
-	cigarDB           *gorm.DB
-	apiPrefix         string
+	createDB           bool
+	startServer        bool
+	server             string
+	testCigarCreation  bool
+	port               int
+	dbPath             string
+	dbName             string
+	cigarDB            *gorm.DB
+	apiPrefix          string
+	ValueOperatorMap   = map[int]map[string]bool{}
+	LogicalOperatorMap = map[string]bool{"AND": true, "OR": true, "": true}
 )
 
 func CreateTableSchemas() []any {
@@ -41,5 +43,40 @@ func CreateNewCigarTable() *Cigar {
 		KyleRating:           0,
 		KyleReview:           "",
 		AuthenticHumanReview: "",
+	}
+}
+
+func PopulateValueOperatorMap() {
+	ValueOperatorMap[TypeInt] = map[string]bool{
+		"<":  true,
+		"<=": true,
+		"=":  true,
+		"!=": true,
+		">=": true,
+		">":  true,
+	}
+	ValueOperatorMap[TypeFloat] = map[string]bool{
+		"<":  true,
+		"<=": true,
+		"=":  true,
+		"!=": true,
+		">=": true,
+		">":  true,
+	}
+	ValueOperatorMap[TypeString] = map[string]bool{
+		"<":        true,
+		"<=":       true,
+		"=":        true,
+		"<>":       true,
+		">=":       true,
+		">":        true,
+		"LIKE":     true,
+		"IN":       true,
+		"NOT LIKE": true,
+		"GLOB":     true,
+	}
+	ValueOperatorMap[TypeBool] = map[string]bool{
+		"=":  true,
+		"<>": true,
 	}
 }

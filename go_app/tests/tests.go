@@ -3,6 +3,9 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
+	"math/rand"
 	//"fmt"
 	"net/http"
 	"net/url"
@@ -72,8 +75,43 @@ func CreateRandomCigarPtr() *Cigar {
 	return &c
 }
 
-func QueryCigarTable(URL *url.URL) {
+func QueryCigarTable(URL *url.URL) []*Cigar {
+	cigars := []*Cigar{}
 	client := http.Client{}
 	lInfo.Printf("Querying url: %s", URL.String())
-	client.Get(URL.String())
+	response, _ := client.Get(URL.String())
+	bodyContent, _ := io.ReadAll(response.Body)
+	json.Unmarshal(bodyContent, &cigars)
+	return cigars
+}
+
+func FilterCigarTableByRating(URL *url.URL) ([]*Cigar, error) {
+	encoder := json.NewEncoder(lInfo.Writer())
+	encoder.SetEscapeHTML(false)
+	filter := SelectionFilter{
+		Column:   "Rating",
+		Value:    rand.Int() % 11,
+		Operator: GetRandomStringKey(ValueOperatorMap[TypeInt]),
+		// Operator: ">=",
+		Logical: "",
+	}
+	if debug {
+		encoder.Encode(filter)
+	}
+	payload := QueryPayload{Table: "Cigars", Filters: []SelectionFilter{filter}}
+	if debug {
+		encoder.Encode(payload)
+	}
+	payloadContent, _ := json.Marshal(&payload)
+	payloadBuffer := &bytes.Buffer{}
+	payloadBuffer.Write(payloadContent)
+	client := http.Client{}
+	response, err := client.Post(URL.String(), "application/json", payloadBuffer)
+	if err != nil {
+		return nil, fmt.Errorf("Error sending post to api: %w", err)
+	}
+	responseContent, _ := io.ReadAll(response.Body)
+	queryResponse := []*Cigar{}
+	_ = json.Unmarshal(responseContent, &queryResponse)
+	return queryResponse, nil
 }
