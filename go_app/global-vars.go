@@ -10,8 +10,7 @@ var (
 	server             string
 	testCigarCreation  bool
 	port               int
-	dbPath             string
-	dbName             string
+	dbDSN              string
 	cigarDB            *gorm.DB
 	apiPrefix          string
 	ValueOperatorMap   = map[int]map[string]bool{}
@@ -20,7 +19,6 @@ var (
 
 func CreateTableSchemas() []any {
 	tableSchemas := make([]any, 0, 1)
-	// tableSchemas = append(tableSchemas, CreateNewCigarTable())
 	tableSchemas = append(tableSchemas, &Cigar{})
 	return tableSchemas
 }
