@@ -8,10 +8,18 @@ import (
 )
 
 func SetRoutesAndRun(router *gin.Engine) {
-	router.GET(fmt.Sprintf("%s/test", apiPrefix), test)
-	router.POST(fmt.Sprintf("%s/test", apiPrefix), HandleCreateCigarRouter)
-	router.GET(fmt.Sprintf("%s/cigars", apiPrefix), MakeDBHandler(cigarDB, HandleQueryCigarTable))
-	router.POST(fmt.Sprintf("%s/where", apiPrefix), MakeDBHandler(cigarDB, SelectWhereHandler))
+	// Auth routes (public)
+	router.GET("/login", HandleLogin)
+	router.GET("/logout", HandleLogout)
+	router.GET("/auth/google/callback", HandleOAuthCallback)
+
+	// API routes (protected)
+	api := router.Group(apiPrefix, WithAuth())
+	api.GET("/test", test)
+	api.POST("/test", HandleCreateCigarRouter)
+	api.GET("/cigars", MakeDBHandler(cigarDB, HandleQueryCigarTable))
+	api.POST("/where", MakeDBHandler(cigarDB, SelectWhereHandler))
+
 	log.Printf("starting webserver at %s:%d", server, port)
 	router.Run(fmt.Sprintf("%s:%d", server, port))
 }

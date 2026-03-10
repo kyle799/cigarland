@@ -30,7 +30,7 @@ func OpenDB(dsn string) *gorm.DB {
 
 func InitializeDBTables(db *gorm.DB, tableSchemas []any) {
 	log.Printf("Starting table migration\n")
-	for _, schema := range tableSchemas {
-		db.AutoMigrate(schema)
+	for _, s := range tableSchemas {
+		db.AutoMigrate(s)
 	}
 }

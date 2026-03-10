@@ -1,11 +1,6 @@
 package main
 
-import (
-//	"github.com/mattn/go-sqlite3"
-//	"gorm.io/driver/sqlite"
-//
-// "gorm.io/gorm"
-)
+import "time"
 
 type Cigar struct {
 	Brand                string `gorm:"primaryKey" json:"brand"`
@@ -42,4 +37,10 @@ type SelectionFilter struct {
 type QueryPayload struct {
 	Table   string            `json:"table"`
 	Filters []SelectionFilter `json:"filters"`
+}
+
+type Session struct {
+	ID        string    `gorm:"primaryKey"`
+	Email     string    `gorm:"not null"`
+	CreatedAt time.Time `gorm:"not null"`
 }
