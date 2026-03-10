@@ -101,6 +101,15 @@ func GetCurrentUser(ctx *gin.Context) (string, bool) {
 	return session.Email, true
 }
 
+func HandleMe(ctx *gin.Context) {
+	email, ok := GetCurrentUser(ctx)
+	if !ok {
+		ctx.Status(http.StatusUnauthorized)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"email": email})
+}
+
 func WithAuth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if _, ok := GetCurrentUser(ctx); !ok {
