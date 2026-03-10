@@ -12,6 +12,7 @@ func SetRoutesAndRun(router *gin.Engine) {
 	router.GET("/login", HandleLogin)
 	router.GET("/logout", HandleLogout)
 	router.GET("/auth/google/callback", HandleOAuthCallback)
+	router.GET("/me", HandleMe)
 
 	// API routes (protected)
 	api := router.Group(apiPrefix, WithAuth())
