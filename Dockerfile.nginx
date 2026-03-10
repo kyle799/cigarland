@@ -1,0 +1,9 @@
+FROM nginx:alpine
+
+RUN mkdir -p /etc/nginx/sites-enabled \
+    && rm -f /etc/nginx/conf.d/default.conf
+
+COPY container/files/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY container/files/nginx/cigarland /etc/nginx/sites-enabled/cigarland
+
+EXPOSE 80
