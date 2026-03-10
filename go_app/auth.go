@@ -83,7 +83,7 @@ func HandleOAuthCallback(ctx *gin.Context) {
 
 func HandleLogout(ctx *gin.Context) {
 	if cookie, err := ctx.Cookie("cigarland_session"); err == nil {
-		cigarDB.Delete(&Session{}, "id = ?", cookie)
+		cigarDB.Delete(&Session{ID: cookie})
 	}
 	ctx.SetCookie("cigarland_session", "", -1, "/", "", false, true)
 	ctx.Redirect(http.StatusSeeOther, "/login")
@@ -95,7 +95,7 @@ func GetCurrentUser(ctx *gin.Context) (string, bool) {
 		return "", false
 	}
 	var session Session
-	if cigarDB.Where("id = ?", sessionID).First(&session).Error != nil {
+	if cigarDB.First(&session, sessionID).Error != nil {
 		return "", false
 	}
 	return session.Email, true
