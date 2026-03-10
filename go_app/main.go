@@ -22,6 +22,7 @@ func main() {
 		if cigarDB == nil {
 			cigarDB = OpenDB(dsn)
 		}
+		InitOAuth()
 		router := gin.Default()
 		SetRoutesAndRun(router)
 	}

@@ -24,6 +24,9 @@ services:
       DB_USER: cigarland
       DB_PASSWORD: cigarland
       DB_NAME: cigarland
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_REDIRECT_URL: ${GOOGLE_REDIRECT_URL}
     depends_on:
       db:
         condition: service_healthy

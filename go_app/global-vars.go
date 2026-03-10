@@ -18,8 +18,9 @@ var (
 )
 
 func CreateTableSchemas() []any {
-	tableSchemas := make([]any, 0, 1)
+	tableSchemas := make([]any, 0, 2)
 	tableSchemas = append(tableSchemas, &Cigar{})
+	tableSchemas = append(tableSchemas, &Session{})
 	return tableSchemas
 }
 
