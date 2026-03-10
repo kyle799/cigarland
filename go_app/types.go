@@ -40,7 +40,7 @@ type QueryPayload struct {
 }
 
 type Session struct {
-	ID        string    `gorm:"primaryKey"`
-	Email     string    `gorm:"not null"`
-	CreatedAt time.Time `gorm:"not null"`
+	ID        string    `gorm:"primaryKey;column:id"`
+	Email     string    `gorm:"not null;column:email"`
+	CreatedAt time.Time `gorm:"not null;column:created_at"`
 }

@@ -95,7 +95,7 @@ func GetCurrentUser(ctx *gin.Context) (string, bool) {
 		return "", false
 	}
 	var session Session
-	if cigarDB.First(&session, sessionID).Error != nil {
+	if cigarDB.Where("id = ?", sessionID).First(&session).Error != nil {
 		return "", false
 	}
 	return session.Email, true
