@@ -3,46 +3,55 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
-	//"net/url"
 	"os"
-	"path/filepath"
-	//"sync"
-	//"time"
+
 	"github.com/gin-gonic/gin"
 )
-
-func createPath(path string) {
-	err := os.MkdirAll(path, 0o750)
-	if err != nil {
-		log.Fatalf("failure to create %s", err)
-	}
-	log.Printf("Created path %s", path)
-}
 
 func main() {
 	ParseArgs()
 	PopulateValueOperatorMap()
+	dsn := buildDSN()
 	if createDB {
 		fmt.Printf("Starting creation of db\n")
-		createPath(dbPath)
+		cigarDB = OpenDB(dsn)
 		tables := CreateTableSchemas()
-		cigarDB = OpenDB(filepath.Join(dbPath, dbName))
 		InitializeDBTables(cigarDB, tables)
 	}
 	if startServer {
+		if cigarDB == nil {
+			cigarDB = OpenDB(dsn)
+		}
 		router := gin.Default()
 		SetRoutesAndRun(router)
 	}
 }
 
+func buildDSN() string {
+	if dbDSN != "" {
+		return dbDSN
+	}
+	host := getEnv("DB_HOST", "localhost")
+	port := getEnv("DB_PORT", "5432")
+	user := getEnv("DB_USER", "postgres")
+	password := getEnv("DB_PASSWORD", "")
+	dbname := getEnv("DB_NAME", "cigarland")
+	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+}
+
+func getEnv(key, fallback string) string {
+	if val := os.Getenv(key); val != "" {
+		return val
+	}
+	return fallback
+}
+
 func ParseArgs() {
-	flag.BoolVar(&createDB, "create-db", false, "Boolean toggle to create a new DB")
+	flag.BoolVar(&createDB, "create-db", false, "Boolean toggle to create/migrate the DB schema")
 	flag.BoolVar(&startServer, "start-server", false, "Boolean toggle to start the server")
 	flag.BoolVar(&testCigarCreation, "test", false, "Boolean to run basic tests")
 	flag.StringVar(&server, "server", "localhost", "Server address")
-	flag.StringVar(&dbPath, "db-path", "/cigarland/db", "Path for database")
-	flag.StringVar(&dbName, "db-name", "cigar.db", "Name of the database file")
+	flag.StringVar(&dbDSN, "db-dsn", "", "PostgreSQL DSN (overrides DB_HOST/DB_PORT/DB_USER/DB_PASSWORD/DB_NAME env vars)")
 	flag.StringVar(&apiPrefix, "api-prefix", "", "Name of api prefix for all api paths")
 	flag.IntVar(&port, "port", 8080, "Port to run the server on")
 	flag.Parse()
