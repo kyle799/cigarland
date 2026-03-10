@@ -1,0 +1,43 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: cigarland
+      POSTGRES_USER: cigarland
+      POSTGRES_PASSWORD: cigarland
+    volumes:
+      - cigarland-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cigarland -d cigarland"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: cigarland
+      DB_PASSWORD: cigarland
+      DB_NAME: cigarland
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  cigarland-db:
