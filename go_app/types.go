@@ -46,8 +46,8 @@ type Session struct {
 }
 
 type UserPermission struct {
-	Email     string `gorm:"primaryKey;column:email"`
-	CanAdd    bool   `gorm:"not null;default:false;column:can_add"`
-	CanDelete bool   `gorm:"not null;default:false;column:can_delete"`
-	CanAdmin  bool   `gorm:"not null;default:false;column:can_admin"`
+	Email     string `gorm:"primaryKey;column:email" json:"email"`
+	CanAdd    bool   `gorm:"not null;default:false;column:can_add" json:"can_add"`
+	CanDelete bool   `gorm:"not null;default:false;column:can_delete" json:"can_delete"`
+	CanAdmin  bool   `gorm:"not null;default:false;column:can_admin" json:"can_admin"`
 }
