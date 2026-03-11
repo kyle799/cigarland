@@ -17,6 +17,7 @@
         <ul class="nav-list">
           <li><a href="./index.html">Cigars</a></li>
           <li><a href="./add_cigar.html">Add new cigar</a></li>
+          <li id="nav-admin" style="display:none"><a href="./admin.html">Admin</a></li>
           <li id="nav-auth"><a href="/login">Login</a></li>
 
           <li>
@@ -85,7 +86,12 @@
   <button type="submit">Submit Cigar</button>
 </form>
     <script src="js/dark_mode.js?v=1"></script>
-    <script src="js/add_cigar.js?v=.01"></script>
     <script src="js/nav.js?v=1"></script>
+    <script>
+      document.addEventListener('perms-loaded', () => {
+        if (!window.userPerms.can_add) window.location.href = '/';
+      });
+    </script>
+    <script src="js/add_cigar.js?v=.01"></script>
 </body>
 </html>

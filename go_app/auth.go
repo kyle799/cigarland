@@ -101,13 +101,48 @@ func GetCurrentUser(ctx *gin.Context) (string, bool) {
 	return session.Email, true
 }
 
+func GetUserPermission(email string) *UserPermission {
+	var perm UserPermission
+	if cigarDB.Where("email = ?", email).First(&perm).Error != nil {
+		return nil
+	}
+	return &perm
+}
+
 func HandleMe(ctx *gin.Context) {
 	email, ok := GetCurrentUser(ctx)
 	if !ok {
 		ctx.Status(http.StatusUnauthorized)
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"email": email})
+	perm := GetUserPermission(email)
+	if perm == nil {
+		perm = &UserPermission{Email: email}
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"email":      email,
+		"can_add":    perm.CanAdd,
+		"can_delete": perm.CanDelete,
+		"can_admin":  perm.CanAdmin,
+	})
+}
+
+func WithPermission(check func(*UserPermission) bool) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		email, ok := GetCurrentUser(ctx)
+		if !ok {
+			ctx.Redirect(http.StatusSeeOther, "/login")
+			ctx.Abort()
+			return
+		}
+		perm := GetUserPermission(email)
+		if perm == nil || !check(perm) {
+			ctx.Status(http.StatusForbidden)
+			ctx.Abort()
+			return
+		}
+		ctx.Next()
+	}
 }
 
 func WithAuth() gin.HandlerFunc {
