@@ -44,3 +44,10 @@ type Session struct {
 	Email     string    `gorm:"not null;column:email"`
 	CreatedAt time.Time `gorm:"not null;column:created_at"`
 }
+
+type UserPermission struct {
+	Email     string `gorm:"primaryKey;column:email"`
+	CanAdd    bool   `gorm:"not null;default:false;column:can_add"`
+	CanDelete bool   `gorm:"not null;default:false;column:can_delete"`
+	CanAdmin  bool   `gorm:"not null;default:false;column:can_admin"`
+}

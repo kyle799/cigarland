@@ -14,12 +14,15 @@ func SetRoutesAndRun(router *gin.Engine) {
 	router.GET("/auth/google/callback", HandleOAuthCallback)
 	router.GET("/me", HandleMe)
 
-	// API routes (protected)
+	// API routes
 	api := router.Group(apiPrefix, WithAuth())
 	api.GET("/test", test)
-	api.POST("/test", HandleCreateCigarRouter)
 	api.GET("/cigars", MakeDBHandler(cigarDB, HandleQueryCigarTable))
 	api.POST("/where", MakeDBHandler(cigarDB, SelectWhereHandler))
+	api.POST("/test", WithPermission(func(p *UserPermission) bool { return p.CanAdd }), HandleCreateCigarRouter)
+	api.DELETE("/cigars", WithPermission(func(p *UserPermission) bool { return p.CanDelete }), HandleDeleteCigar)
+	api.GET("/admin/users", WithPermission(func(p *UserPermission) bool { return p.CanAdmin }), HandleAdminListUsers)
+	api.POST("/admin/users", WithPermission(func(p *UserPermission) bool { return p.CanAdmin }), HandleAdminUpdateUser)
 
 	log.Printf("starting webserver at %s:%d", server, port)
 	router.Run(fmt.Sprintf("%s:%d", server, port))
