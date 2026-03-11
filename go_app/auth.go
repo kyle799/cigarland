@@ -77,6 +77,7 @@ func HandleOAuthCallback(ctx *gin.Context) {
 	}
 
 	cigarDB.Create(&Session{ID: sessionID, Email: email, CreatedAt: time.Now()})
+	cigarDB.FirstOrCreate(&UserPermission{}, UserPermission{Email: email})
 	ctx.SetCookie("cigarland_session", sessionID, 86400*30, "/", "", false, true)
 	ctx.Redirect(http.StatusSeeOther, "/")
 }
