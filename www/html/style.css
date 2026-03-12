@@ -121,6 +121,45 @@ img.cigar-image {
     margin: 1rem auto;
   }
 }
+
+/* ── Hamburger ─────────────────────────────────── */
+#nav-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0 1rem;
+  line-height: 3.5rem;
+}
+@media (max-width: 640px) {
+  #nav-hamburger { display: block; }
+  .top-nav {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 3.5rem;
+    padding: 0;
+  }
+  .nav-list {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    gap: 0;
+    margin: 0;
+    padding: 0.5rem 0;
+    background: var(--nav-bg);
+    border-top: 1px solid var(--card-border-color);
+  }
+  .top-nav.nav-open .nav-list { display: flex; }
+  .nav-list li {
+    padding: 0.5rem 1.5rem;
+  }
+  .nav-list label.switch {
+    margin: 0.25rem 0;
+  }
+}
 .cigar-card > summary {
   list-style: none;
   cursor: pointer;
