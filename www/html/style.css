@@ -7,14 +7,27 @@
   --card-border-color:  #aaaaaa;
 }
 [data-theme="dark"] {
-  /* Dark mode */
-  --bg-color:           rgb(34, 56, 56);
-  --text-color:         #f6f6f6;
-  --nav-bg:             rgb(46, 75, 75);
-  --link-hover:         #63979b;
-  --card-bg:            rgb(46, 75, 75);
-  --card-border-color:  #888888;
+  --bg-color:           #0d0d0d;
+  --text-color:         #e6e2dc;
+  --nav-bg:             #141414;
+  --link-hover:         #8ab5c8;
+  --card-bg:            #1c1c1c;
+  --card-border-color:  #262626;
 }
+#bg-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+[data-theme="dark"] #bg-canvas {
+  opacity: 1;
+}
+nav, .content, .login-form, h1, h2 { position: relative; z-index: 1; }
+
 html, body { height: 100%; margin: .5rem; }
 body {
   background: var(--bg-color);
