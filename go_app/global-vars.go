@@ -37,6 +37,7 @@ func CreateNewCigarTable() *Cigar {
 	return &Cigar{
 		Brand:                "Default",
 		Name:                 "Default",
+		Origin:               "",
 		Wrapper:              "Default",
 		Profile:              "String",
 		TastyTip:             false,
