@@ -17,3 +17,9 @@ func HandleCreateCigarRouter(ctx *gin.Context) {
 	log.Printf("Received request to create cigars")
 	HandleCreateCigar(ctx, cigarDB)
 }
+
+func HandleGetWrappers(ctx *gin.Context) {
+	var wrappers []string
+	cigarDB.Model(&Cigar{}).Distinct("wrapper").Where("wrapper != ''").Pluck("wrapper", &wrappers)
+	ctx.JSON(http.StatusOK, wrappers)
+}

@@ -287,6 +287,7 @@ th { background: var(--nav-bg); }
   color: var(--text-color);
   opacity: 0.7;
 }
+.form-field select,
 .form-field input,
 .form-field textarea {
   background: var(--bg-color);
@@ -300,6 +301,7 @@ th { background: var(--nav-bg); }
   resize: vertical;
   transition: border-color 0.15s;
 }
+.form-field select:focus,
 .form-field input:focus,
 .form-field textarea:focus {
   outline: none;
