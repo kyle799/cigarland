@@ -5,10 +5,11 @@ import "time"
 type Cigar struct {
 	Brand                string `gorm:"primaryKey" json:"brand"`
 	Name                 string `gorm:"primaryKey" json:"name"`
+	Origin               string `json:"origin"`
 	Wrapper              string `json:"wrapper"`
 	Profile              string `json:"profile"`
 	TastyTip             bool   `gorm:"default:false" json:"tasty_tip"`
-	Pressed              bool   `grom:"default:false" json:"pressed"`
+	Pressed              bool   `gorm:"default:false" json:"pressed"`
 	Binder               string `json:"binder"`
 	Spicy                int    `gorm:"default:0" json:"spicy"`
 	Rating               int    `json:"rating"`
