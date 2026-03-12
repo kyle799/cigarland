@@ -3,15 +3,26 @@ const status      = document.getElementById('form-status');
 const wrapperSel  = document.getElementById('f-wrapper');
 const wrapperOther = document.getElementById('f-wrapper-other');
 
+const BASE_WRAPPERS = [
+  'Double Claro / Candela',
+  'Claro',
+  'Colorado Claro',
+  'Colorado',
+  'Colorado Maduro',
+  'Maduro',
+  'Oscuro',
+];
+
 fetch('/api/cigars/wrappers')
   .then(r => r.ok ? r.json() : [])
-  .then(wrappers => {
+  .then(fromServer => {
+    const all = [...new Set([...BASE_WRAPPERS, ...fromServer])].sort();
     wrapperSel.innerHTML = '';
     const blank = document.createElement('option');
     blank.value = '';
     blank.textContent = '— Select wrapper —';
     wrapperSel.appendChild(blank);
-    wrappers.sort().forEach(w => {
+    all.forEach(w => {
       const opt = document.createElement('option');
       opt.value = w;
       opt.textContent = w;
