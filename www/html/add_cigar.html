@@ -11,13 +11,15 @@
     <title>Cigarland</title>
     <link rel="stylesheet" href="style.css?v=27">
     <link rel="icon" href="pictures/favicon.ico" type="image/x-icon">
+    <script>!function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t)}();</script>
 </head>
 <body>
     <nav class="top-nav">
         <ul class="nav-list">
-          <li><a href="./index.html">Cigars</a></li>
-          <li><a href="./add_cigar.html">Add new cigar</a></li>
-          <li><a href="./login.html">Login</a></li>
+          <li><a href="/">Cigars</a></li>
+          <li id="nav-add" style="display:none"><a href="/add_cigar">Add new cigar</a></li>
+          <li id="nav-admin" style="display:none"><a href="/admin">Admin</a></li>
+          <li id="nav-auth"><a href="/login">Login</a></li>
 
           <li>
             <label class="switch" title="Toggle dark mode">
@@ -85,6 +87,12 @@
   <button type="submit">Submit Cigar</button>
 </form>
     <script src="js/dark_mode.js?v=1"></script>
+    <script src="js/nav.js?v=1"></script>
+    <script>
+      document.addEventListener('perms-loaded', () => {
+        if (!window.userPerms.can_add) window.location.href = '/';
+      });
+    </script>
     <script src="js/add_cigar.js?v=.01"></script>
 </body>
 </html>

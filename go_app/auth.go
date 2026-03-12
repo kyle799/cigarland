@@ -77,13 +77,14 @@ func HandleOAuthCallback(ctx *gin.Context) {
 	}
 
 	cigarDB.Create(&Session{ID: sessionID, Email: email, CreatedAt: time.Now()})
+	cigarDB.FirstOrCreate(&UserPermission{}, UserPermission{Email: email})
 	ctx.SetCookie("cigarland_session", sessionID, 86400*30, "/", "", false, true)
 	ctx.Redirect(http.StatusSeeOther, "/")
 }
 
 func HandleLogout(ctx *gin.Context) {
 	if cookie, err := ctx.Cookie("cigarland_session"); err == nil {
-		cigarDB.Delete(&Session{}, "id = ?", cookie)
+		cigarDB.Delete(&Session{ID: cookie})
 	}
 	ctx.SetCookie("cigarland_session", "", -1, "/", "", false, true)
 	ctx.Redirect(http.StatusSeeOther, "/login")
@@ -99,6 +100,50 @@ func GetCurrentUser(ctx *gin.Context) (string, bool) {
 		return "", false
 	}
 	return session.Email, true
+}
+
+func GetUserPermission(email string) *UserPermission {
+	var perm UserPermission
+	if cigarDB.Where("email = ?", email).First(&perm).Error != nil {
+		return nil
+	}
+	return &perm
+}
+
+func HandleMe(ctx *gin.Context) {
+	email, ok := GetCurrentUser(ctx)
+	if !ok {
+		ctx.Status(http.StatusUnauthorized)
+		return
+	}
+	perm := GetUserPermission(email)
+	if perm == nil {
+		perm = &UserPermission{Email: email}
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"email":      email,
+		"can_add":    perm.CanAdd,
+		"can_delete": perm.CanDelete,
+		"can_admin":  perm.CanAdmin,
+	})
+}
+
+func WithPermission(check func(*UserPermission) bool) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		email, ok := GetCurrentUser(ctx)
+		if !ok {
+			ctx.Redirect(http.StatusSeeOther, "/login")
+			ctx.Abort()
+			return
+		}
+		perm := GetUserPermission(email)
+		if perm == nil || !check(perm) {
+			ctx.Status(http.StatusForbidden)
+			ctx.Abort()
+			return
+		}
+		ctx.Next()
+	}
 }
 
 func WithAuth() gin.HandlerFunc {

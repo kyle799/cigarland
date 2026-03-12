@@ -8,4 +8,4 @@ until nc -z "${DB_HOST}" "${DB_PORT:-5432}"; do
 done
 echo "Postgres ready."
 
-exec /cigarland/cigarland_api -start-server -create-db
+exec /cigarland/cigarland_api -start-server -create-db -server 0.0.0.0

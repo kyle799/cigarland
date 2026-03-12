@@ -8,10 +8,22 @@ import (
 )
 
 func SetRoutesAndRun(router *gin.Engine) {
-	router.GET(fmt.Sprintf("%s/test", apiPrefix), test)
-	router.POST(fmt.Sprintf("%s/test", apiPrefix), HandleCreateCigarRouter)
-	router.GET(fmt.Sprintf("%s/cigars", apiPrefix), MakeDBHandler(cigarDB, HandleQueryCigarTable))
-	router.POST(fmt.Sprintf("%s/where", apiPrefix), MakeDBHandler(cigarDB, SelectWhereHandler))
+	// Auth routes (public)
+	router.GET("/login", HandleLogin)
+	router.GET("/logout", HandleLogout)
+	router.GET("/auth/google/callback", HandleOAuthCallback)
+	router.GET("/me", HandleMe)
+
+	// API routes
+	api := router.Group(apiPrefix, WithAuth())
+	api.GET("/test", test)
+	api.GET("/cigars", MakeDBHandler(cigarDB, HandleQueryCigarTable))
+	api.POST("/where", MakeDBHandler(cigarDB, SelectWhereHandler))
+	api.POST("/test", WithPermission(func(p *UserPermission) bool { return p.CanAdd }), HandleCreateCigarRouter)
+	api.DELETE("/cigars", WithPermission(func(p *UserPermission) bool { return p.CanDelete }), HandleDeleteCigar)
+	api.GET("/admin/users", WithPermission(func(p *UserPermission) bool { return p.CanAdmin }), HandleAdminListUsers)
+	api.POST("/admin/users", WithPermission(func(p *UserPermission) bool { return p.CanAdmin }), HandleAdminUpdateUser)
+
 	log.Printf("starting webserver at %s:%d", server, port)
 	router.Run(fmt.Sprintf("%s:%d", server, port))
 }
