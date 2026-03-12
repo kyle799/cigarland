@@ -1,61 +1,91 @@
-# 🥃 Cigarland: Go, Databases, and Good Friends
+# Cigarland: Go, Databases, and Good Friends
 
-Welcome to **Cigarland**—a project built by two friends learning **Go**, diving into **databases**, and logging our journey through code, cigars, and craftsmanship.
+Welcome to **Cigarland**-a project built by two friends learning **Go**, diving into **databases**, and logging our journey through code, cigars, and craftsmanship.
 
-This isn’t just about syntax or schema—it’s about sharpening our tools, improving our systems, and enjoying a damn fine cigar while we do it.
-
----
-
-## 🚀 Project Goals
-
-- **Learn Go (Golang)**: idiomatic practices, concurrency, API building
-- **Master Databases**: SQL/NoSQL, ORM vs raw queries, performance patterns
-- **Build a Full App**: local + web-based cigar review tracker
-- **Experiment & Deploy**: play with containers, systemd, CI/CD
-- **Have Fun**: learn with intent, but never take it too seriously
+This isn't just about syntax or schema-it's about sharpening our tools, improving our systems, and enjoying a damn fine cigar while we do it.
 
 ---
 
-## 🧱 Tech Stack
+## Tech Stack
 
-| Layer        | Tooling                  |
-|--------------|--------------------------|
-| Language     | Go (Golang)              |
-| Web Framework| `net/http`, `Gin`, `Fiber` (TBD) |
-| Database     | SQLite (starter), PostgreSQL (target maybe?????????) |
-| Frontend     | Minimal HTML/CSS |
-| Infra        | systemd, docker (future), NGINX |
-| Dev Workflow | Git, Makefile |
+| Layer         | Tooling                         |
+|---------------|---------------------------------|
+| Language      | Go 1.25                         |
+| Web Framework | Gin                             |
+| ORM           | GORM                            |
+| Database      | PostgreSQL 17                   |
+| Frontend      | HTML / CSS / Vanilla JS         |
+| Infra         | Docker Compose, NGINX           |
+| Auth          | Google OAuth2 + session cookies |
 
 ---
 
-## 🔥 Feature Concepts
+## Features
 
-- [x] Add cigars with brand, wrapper, country, strength, flavor notes
-- [] Leave 1–10 star reviews and tasting notes
-- [ ] Search, sort, and filter cigars by flavor profile or score
+- [x] Google OAuth2 login
+- [x] Per-user permission system (add, delete, admin)
+- [x] Add cigars with brand, wrapper, profile, strength, flavor notes
+- [x] Per-user ratings and reviews (Kyle + John)
+- [x] Filtered cigar queries via dynamic WHERE API
+- [x] Delete cigars
+- [x] Admin panel to manage user permissions
+- [x] Containerized with Docker Compose + NGINX reverse proxy
+- [ ] Search, sort, and filter UI
 - [ ] Save shared tasting notes with `@jhohnharmon`
-- [ ] Deployable ANYWHERE
+- [ ] Humidor inventory tracking
 - [ ] Future: track humidor inventory, humidity/temp over time
 
 ---
 
-## 🧠 Learning Topics
+## Running the App
 
-This repo explores real-world fundamentals while staying fun:
+### With Docker Compose
 
-- Go modules, structs, interfaces
-- HTTP servers, routers, middleware
-- SQL design, querying, schema evolution
-- RESTful API patterns
-- Testing and validation
-- Logging and error handling
-- systemd services and environment configuration
-- Hosting, reverse proxying (NGINX), and deployment basics
+Create a `.env` file in the project root:
+
+```env
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GOOGLE_REDIRECT_URL=http://localhost/auth/google/callback
+```
+
+Then:
+
+```bash
+docker compose up --build
+```
+
+The app will be available at `http://localhost`.
+
+### Locally
+
+```bash
+cd go_app
+
+# First-time setup: create tables and seed admin user
+go run . --create-db
+
+# Start the server
+go run . --start-server --port 8080
+```
+
+Set DB connection via env vars (`DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`) or pass `--db-dsn` directly.
 
 ---
 
-## 🍂 Cigar Review Sample
+## Auth & Permissions
+
+Login is handled via Google OAuth2. On first login, every user is registered with no permissions. The admin (`kyle@15kmr.com`) is seeded with full access on `--create-db`.
+
+| Permission   | Controls                        |
+|--------------|---------------------------------|
+| `can_add`    | Create new cigars               |
+| `can_delete` | Delete cigars                   |
+| `can_admin`  | View and edit user permissions  |
+
+---
+
+## Cigar Review Sample
 
 ```json
 {
@@ -77,3 +107,21 @@ This repo explores real-world fundamentals while staying fun:
   "kyle_review": "",
   "authentic_human_review": ""
 }
+```
+
+---
+
+## Learning Topics
+
+This repo explores real-world fundamentals while staying fun:
+
+- Go modules, structs, interfaces
+- HTTP servers, routers, middleware
+- SQL design, querying, schema evolution
+- RESTful API patterns
+- OAuth2 and session-based auth
+- Testing and validation
+- Logging and error handling
+- Docker Compose and containerization
+- Hosting, reverse proxying (NGINX), and deployment basics
+- Too much html and javascript :(
