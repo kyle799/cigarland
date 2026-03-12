@@ -14,6 +14,7 @@ function renderUsers(users) {
       <tr>
         <th>Email</th>
         <th>Can Add</th>
+        <th>Can Edit</th>
         <th>Can Delete</th>
         <th>Can Admin</th>
         <th></th>
@@ -26,6 +27,7 @@ function renderUsers(users) {
     tr.innerHTML = `
       <td>${u.email}</td>
       <td><input type="checkbox" ${u.can_add ? 'checked' : ''} data-field="can_add"></td>
+      <td><input type="checkbox" ${u.can_edit ? 'checked' : ''} data-field="can_edit"></td>
       <td><input type="checkbox" ${u.can_delete ? 'checked' : ''} data-field="can_delete"></td>
       <td><input type="checkbox" ${u.can_admin ? 'checked' : ''} data-field="can_admin"></td>
       <td><button>Save</button></td>
@@ -40,6 +42,7 @@ function renderUsers(users) {
     <h3>Add user</h3>
     <input id="new-email" type="email" placeholder="email">
     <label><input type="checkbox" id="new-can-add"> Add</label>
+    <label><input type="checkbox" id="new-can-edit"> Edit</label>
     <label><input type="checkbox" id="new-can-delete"> Delete</label>
     <label><input type="checkbox" id="new-can-admin"> Admin</label>
     <button id="add-user-btn">Add</button>
@@ -69,6 +72,7 @@ async function addUser() {
   const payload = {
     email,
     can_add:    document.getElementById('new-can-add').checked,
+    can_edit:   document.getElementById('new-can-edit').checked,
     can_delete: document.getElementById('new-can-delete').checked,
     can_admin:  document.getElementById('new-can-admin').checked,
   };

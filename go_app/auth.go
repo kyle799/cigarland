@@ -123,6 +123,7 @@ func HandleMe(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"email":      email,
 		"can_add":    perm.CanAdd,
+		"can_edit":   perm.CanEdit,
 		"can_delete": perm.CanDelete,
 		"can_admin":  perm.CanAdmin,
 	})
