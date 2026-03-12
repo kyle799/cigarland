@@ -1,9 +1,9 @@
 # --- Build stage ---
-FROM golang:1.24 AS builder
+FROM golang:1.25 AS builder
 
 WORKDIR /build
 COPY go_app/ .
-RUN go get gorm.io/driver/postgres && CGO_ENABLED=0 go build -o cigarland_api .
+RUN GONOSUMDB=* GOFLAGS=-mod=mod CGO_ENABLED=0 go build -o cigarland_api .
 
 # --- Runtime stage ---
 FROM alpine:latest

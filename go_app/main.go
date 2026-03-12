@@ -17,11 +17,13 @@ func main() {
 		cigarDB = OpenDB(dsn)
 		tables := CreateTableSchemas()
 		InitializeDBTables(cigarDB, tables)
+		SeedAdminUser(cigarDB)
 	}
 	if startServer {
 		if cigarDB == nil {
 			cigarDB = OpenDB(dsn)
 		}
+		InitOAuth()
 		router := gin.Default()
 		SetRoutesAndRun(router)
 	}

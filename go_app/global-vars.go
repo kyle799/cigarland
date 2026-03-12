@@ -17,10 +17,20 @@ var (
 	LogicalOperatorMap = map[string]bool{"AND": true, "OR": true, "": true}
 )
 
+const AdminEmail = "kyle@15kmr.com"
+
 func CreateTableSchemas() []any {
-	tableSchemas := make([]any, 0, 1)
+	tableSchemas := make([]any, 0, 3)
 	tableSchemas = append(tableSchemas, &Cigar{})
+	tableSchemas = append(tableSchemas, &Session{})
+	tableSchemas = append(tableSchemas, &UserPermission{})
 	return tableSchemas
+}
+
+func SeedAdminUser(db *gorm.DB) {
+	perm := UserPermission{Email: AdminEmail}
+	db.FirstOrCreate(&perm, UserPermission{Email: AdminEmail})
+	db.Model(&perm).Updates(UserPermission{CanAdd: true, CanDelete: true, CanAdmin: true})
 }
 
 func CreateNewCigarTable() *Cigar {
