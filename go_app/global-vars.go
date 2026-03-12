@@ -30,7 +30,7 @@ func CreateTableSchemas() []any {
 func SeedAdminUser(db *gorm.DB) {
 	perm := UserPermission{Email: AdminEmail}
 	db.FirstOrCreate(&perm, UserPermission{Email: AdminEmail})
-	db.Model(&perm).Updates(UserPermission{CanAdd: true, CanDelete: true, CanAdmin: true})
+	db.Model(&perm).Updates(UserPermission{CanAdd: true, CanEdit: true, CanDelete: true, CanAdmin: true})
 }
 
 func CreateNewCigarTable() *Cigar {
