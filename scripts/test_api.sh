@@ -145,7 +145,7 @@ section "AUTHENTICATED — can_add permission (POST /api/test)"
 # ─────────────────────────────────────────────
 
 cohiba_payload=$(cat <<'EOF'
-{"cigar_list":[{"brand":"Cohiba","name":"Siglo VI","wrapper":"Cuban","profile":"Medium-Full","binder":"Cuban","pressed":false,"tasty_tip":false,"spicy":4,"rating":9,"length":150,"ring":52,"review":"The flagship of Cuban cigars. Creaminess and complexity in perfect balance — cedar, honey, and subtle spice. Burns slow and even with a tight white ash.","kyle_rating":0,"kyle_review":"","john_rating":0,"john_review":"","image_ref":"","authentic_human_review":""}]}
+{"cigar_list":[{"brand":"Cohiba","name":"Siglo VI","origin":"","wrapper":"Cuban","profile":"Medium-Full","binder":"Cuban","pressed":false,"tasty_tip":false,"spicy":4,"rating":9,"length":150,"ring":52,"review":"The flagship of Cuban cigars. Creaminess and complexity in perfect balance — cedar, honey, and subtle spice. Burns slow and even with a tight white ash.","kyle_rating":0,"kyle_review":"","john_rating":0,"john_review":"","image_ref":"","authentic_human_review":""}]}
 EOF
 )
 
@@ -166,20 +166,89 @@ fi
 section "AUTHENTICATED — can_edit permission (PUT /api/cigars)"
 # ─────────────────────────────────────────────
 
-edit_payload=$(cat <<'EOF'
-{"brand":"Cohiba","name":"Siglo VI","wrapper":"Maduro","profile":"Medium-Full","binder":"Cuban","pressed":false,"tasty_tip":false,"spicy":4,"rating":9,"length":150,"ring":52,"review":"Edited by test script.","kyle_rating":0,"kyle_review":"","john_rating":0,"john_review":"","image_ref":"","authentic_human_review":""}
+# Helper: extract a single field value for a specific cigar from the cigars JSON
+cigar_field() {
+  local brand="$1" name="$2" field="$3" json="$4"
+  echo "$json" | python3 -c "
+import json, sys
+cigars = json.load(sys.stdin)
+for c in cigars:
+    if c.get('brand') == '$brand' and c.get('name') == '$name':
+        print(c.get('$field', ''))
+        break
+"
+}
+
+edited_payload=$(cat <<'EOF'
+{
+  "brand":"Cohiba","name":"Siglo VI",
+  "origin":"Cuba",
+  "wrapper":"Oscuro",
+  "profile":"Full",
+  "binder":"Nicaraguan",
+  "pressed":true,
+  "tasty_tip":true,
+  "spicy":9,
+  "rating":7,
+  "length":140,
+  "ring":48,
+  "review":"Edited review.",
+  "kyle_rating":6,
+  "kyle_review":"Kyle edited.",
+  "john_rating":7,
+  "john_review":"John edited.",
+  "image_ref":"https://example.com/test.jpg",
+  "authentic_human_review":"Authentic edited."
+}
 EOF
 )
 
-s=$(status PUT "$BASE/api/cigars" "$SESSION" "$edit_payload" "application/json")
+s=$(status PUT "$BASE/api/cigars" "$SESSION" "$edited_payload" "application/json")
 if [[ "$can_edit" == "true" ]]; then
-  expect "PUT /api/cigars edits Cohiba Siglo VI (can_edit=true) → 200" "200" "$s"
-  cigars_body=$(body GET "$BASE/api/cigars" "$SESSION")
-  if echo "$cigars_body" | grep -q '"Edited by test script."'; then
-    pass "Edit change confirmed in DB"
+  expect "PUT /api/cigars (can_edit=true) → 200" "200" "$s"
+
+  cigars_json=$(body GET "$BASE/api/cigars" "$SESSION")
+
+  expect "origin=Cuba"                  "Cuba"                       "$(cigar_field Cohiba "Siglo VI" origin        "$cigars_json")"
+  expect "wrapper=Oscuro"               "Oscuro"                     "$(cigar_field Cohiba "Siglo VI" wrapper       "$cigars_json")"
+  expect "profile=Full"                 "Full"                       "$(cigar_field Cohiba "Siglo VI" profile       "$cigars_json")"
+  expect "binder=Nicaraguan"            "Nicaraguan"                 "$(cigar_field Cohiba "Siglo VI" binder        "$cigars_json")"
+  expect "pressed=True"                 "True"                       "$(cigar_field Cohiba "Siglo VI" pressed       "$cigars_json")"
+  expect "tasty_tip=True"               "True"                       "$(cigar_field Cohiba "Siglo VI" tasty_tip     "$cigars_json")"
+  expect "spicy=9"                      "9"                          "$(cigar_field Cohiba "Siglo VI" spicy         "$cigars_json")"
+  expect "rating=7"                     "7"                          "$(cigar_field Cohiba "Siglo VI" rating        "$cigars_json")"
+  expect "length=140"                   "140"                        "$(cigar_field Cohiba "Siglo VI" length        "$cigars_json")"
+  expect "ring=48"                      "48"                         "$(cigar_field Cohiba "Siglo VI" ring          "$cigars_json")"
+  expect "review=Edited review."        "Edited review."             "$(cigar_field Cohiba "Siglo VI" review        "$cigars_json")"
+  expect "kyle_rating=6"                "6"                          "$(cigar_field Cohiba "Siglo VI" kyle_rating   "$cigars_json")"
+  expect "kyle_review=Kyle edited."     "Kyle edited."               "$(cigar_field Cohiba "Siglo VI" kyle_review   "$cigars_json")"
+  expect "john_rating=7"                "7"                          "$(cigar_field Cohiba "Siglo VI" john_rating   "$cigars_json")"
+  expect "john_review=John edited."     "John edited."               "$(cigar_field Cohiba "Siglo VI" john_review   "$cigars_json")"
+  expect "image_ref set"                "https://example.com/test.jpg" "$(cigar_field Cohiba "Siglo VI" image_ref   "$cigars_json")"
+  expect "authentic_human_review set"   "Authentic edited."          "$(cigar_field Cohiba "Siglo VI" authentic_human_review "$cigars_json")"
+
+  # Delete the edited cigar
+  s=$(status DELETE "$BASE/api/cigars?brand=Cohiba&name=Siglo%20VI" "$SESSION")
+  if [[ "$can_delete" == "true" ]]; then
+    expect "DELETE edited Cohiba → 200" "200" "$s"
   else
-    fail "Edit change confirmed in DB" "review=Edited by test script." "not found"
+    echo -e "    ${yellow}NOTE: can_delete=false — skipping delete/recreate, DB left with edited values${reset}"
   fi
+
+  # Recreate with correct original values
+  if [[ "$can_delete" == "true" && "$can_add" == "true" ]]; then
+    restore_payload=$(cat <<'RESTORE'
+{"cigar_list":[{"brand":"Cohiba","name":"Siglo VI","origin":"","wrapper":"Cuban","profile":"Medium-Full","binder":"Cuban","pressed":false,"tasty_tip":false,"spicy":4,"rating":9,"length":150,"ring":52,"review":"The flagship of Cuban cigars. Creaminess and complexity in perfect balance — cedar, honey, and subtle spice. Burns slow and even with a tight white ash.","kyle_rating":0,"kyle_review":"","john_rating":0,"john_review":"","image_ref":"","authentic_human_review":""}]}
+RESTORE
+)
+    s=$(status POST "$BASE/api/test" "$SESSION" "$restore_payload" "application/json")
+    expect "Cohiba Siglo VI restored → 200" "200" "$s"
+    cigars_json=$(body GET "$BASE/api/cigars" "$SESSION")
+    expect "restored wrapper=Cuban"       "Cuban"        "$(cigar_field Cohiba "Siglo VI" wrapper "$cigars_json")"
+    expect "restored spicy=4"             "4"            "$(cigar_field Cohiba "Siglo VI" spicy   "$cigars_json")"
+    expect "restored rating=9"            "9"            "$(cigar_field Cohiba "Siglo VI" rating  "$cigars_json")"
+  fi
+
 else
   expect "PUT /api/cigars (can_edit=false) → 403" "403" "$s"
 fi
