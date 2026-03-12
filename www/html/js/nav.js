@@ -1,3 +1,10 @@
+const hamburger = document.getElementById('nav-hamburger');
+if (hamburger) {
+  hamburger.addEventListener('click', () => {
+    hamburger.closest('nav').classList.toggle('nav-open');
+  });
+}
+
 fetch('/me')
   .then(r => r.ok ? r.json() : null)
   .then(data => {

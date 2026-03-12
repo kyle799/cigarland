@@ -18,9 +18,11 @@ func SetRoutesAndRun(router *gin.Engine) {
 	api := router.Group(apiPrefix, WithAuth())
 	api.GET("/test", test)
 	api.GET("/cigars", MakeDBHandler(cigarDB, HandleQueryCigarTable))
+	api.GET("/cigars/wrappers", HandleGetWrappers)
 	api.POST("/where", MakeDBHandler(cigarDB, SelectWhereHandler))
 	api.POST("/test", WithPermission(func(p *UserPermission) bool { return p.CanAdd }), HandleCreateCigarRouter)
 	api.DELETE("/cigars", WithPermission(func(p *UserPermission) bool { return p.CanDelete }), HandleDeleteCigar)
+	api.PUT("/cigars", WithPermission(func(p *UserPermission) bool { return p.CanEdit }), HandleUpdateCigar)
 	api.GET("/admin/users", WithPermission(func(p *UserPermission) bool { return p.CanAdmin }), HandleAdminListUsers)
 	api.POST("/admin/users", WithPermission(func(p *UserPermission) bool { return p.CanAdmin }), HandleAdminUpdateUser)
 

@@ -5,10 +5,11 @@ import "time"
 type Cigar struct {
 	Brand                string `gorm:"primaryKey" json:"brand"`
 	Name                 string `gorm:"primaryKey" json:"name"`
+	Origin               string `json:"origin"`
 	Wrapper              string `json:"wrapper"`
 	Profile              string `json:"profile"`
 	TastyTip             bool   `gorm:"default:false" json:"tasty_tip"`
-	Pressed              bool   `grom:"default:false" json:"pressed"`
+	Pressed              bool   `gorm:"default:false" json:"pressed"`
 	Binder               string `json:"binder"`
 	Spicy                int    `gorm:"default:0" json:"spicy"`
 	Rating               int    `json:"rating"`
@@ -48,6 +49,7 @@ type Session struct {
 type UserPermission struct {
 	Email     string `gorm:"primaryKey;column:email" json:"email"`
 	CanAdd    bool   `gorm:"not null;default:false;column:can_add" json:"can_add"`
+	CanEdit   bool   `gorm:"not null;default:false;column:can_edit" json:"can_edit"`
 	CanDelete bool   `gorm:"not null;default:false;column:can_delete" json:"can_delete"`
 	CanAdmin  bool   `gorm:"not null;default:false;column:can_admin" json:"can_admin"`
 }

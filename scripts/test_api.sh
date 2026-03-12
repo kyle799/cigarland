@@ -70,6 +70,9 @@ expect "GET /api/test (no auth) → 303" "303" "$s"
 s=$(status GET "$BASE/api/cigars")
 expect "GET /api/cigars (no auth) → 303" "303" "$s"
 
+s=$(status PUT "$BASE/api/cigars" "" '{"brand":"X","name":"Y"}' "application/json")
+expect "PUT /api/cigars (no auth) → 303" "303" "$s"
+
 s=$(status POST "$BASE/api/test" "" '{"cigar_list":[]}' "application/json")
 expect "POST /api/test (no auth) → 303" "303" "$s"
 
@@ -101,10 +104,11 @@ expect "GET /me with session → 200" "200" "$me_status"
 
 email=$(echo "$me_body" | grep -o '"email":"[^"]*"' | cut -d'"' -f4)
 can_add=$(echo "$me_body" | grep -o '"can_add":[a-z]*' | cut -d: -f2)
+can_edit=$(echo "$me_body" | grep -o '"can_edit":[a-z]*' | cut -d: -f2)
 can_delete=$(echo "$me_body" | grep -o '"can_delete":[a-z]*' | cut -d: -f2)
 can_admin=$(echo "$me_body" | grep -o '"can_admin":[a-z]*' | cut -d: -f2)
 
-echo "    email=$email  can_add=$can_add  can_delete=$can_delete  can_admin=$can_admin"
+echo "    email=$email  can_add=$can_add  can_edit=$can_edit  can_delete=$can_delete  can_admin=$can_admin"
 
 # ─────────────────────────────────────────────
 section "AUTHENTICATED — general access"
@@ -120,49 +124,133 @@ cigar_count=$(body GET "$BASE/api/cigars" "$SESSION" | grep -o '"brand"' | wc -l
 echo "    cigars in DB: $cigar_count"
 
 # ─────────────────────────────────────────────
+section "AUTHENTICATED — can_delete permission (DELETE /api/cigars)"
+# ─────────────────────────────────────────────
+
+s=$(status DELETE "$BASE/api/cigars?brand=Cohiba&name=Siglo%20VI" "$SESSION")
+if [[ "$can_delete" == "true" ]]; then
+  expect "DELETE Cohiba Siglo VI (can_delete=true) → 200" "200" "$s"
+  cigars_after=$(body GET "$BASE/api/cigars" "$SESSION")
+  if echo "$cigars_after" | grep -q '"Siglo VI"'; then
+    fail "Cohiba Siglo VI removed from DB" "not found" "still present"
+  else
+    pass "Cohiba Siglo VI confirmed removed from DB"
+  fi
+else
+  expect "DELETE Cohiba Siglo VI (can_delete=false) → 403" "403" "$s"
+fi
+
+# ─────────────────────────────────────────────
 section "AUTHENTICATED — can_add permission (POST /api/test)"
 # ─────────────────────────────────────────────
 
-TEST_BRAND="TestBrand_$$"
-TEST_NAME="TestCigar_$$"
-add_payload=$(cat <<EOF
-{"cigar_list":[{"brand":"$TEST_BRAND","name":"$TEST_NAME","wrapper":"Test","profile":"Light","binder":"Test","spicy":1,"rating":1,"length":100,"ring":40,"review":"test cigar","kyle_rating":1,"john_rating":1,"kyle_review":"","john_review":"","image_ref":"","authentic_human_review":""}]}
+cohiba_payload=$(cat <<'EOF'
+{"cigar_list":[{"brand":"Cohiba","name":"Siglo VI","origin":"","wrapper":"Cuban","profile":"Medium-Full","binder":"Cuban","pressed":false,"tasty_tip":false,"spicy":4,"rating":9,"length":150,"ring":52,"review":"The flagship of Cuban cigars. Creaminess and complexity in perfect balance — cedar, honey, and subtle spice. Burns slow and even with a tight white ash.","kyle_rating":0,"kyle_review":"","john_rating":0,"john_review":"","image_ref":"","authentic_human_review":""}]}
 EOF
 )
 
-s=$(status POST "$BASE/api/test" "$SESSION" "$add_payload" "application/json")
+s=$(status POST "$BASE/api/test" "$SESSION" "$cohiba_payload" "application/json")
 if [[ "$can_add" == "true" ]]; then
-  expect "POST /api/test (can_add=true) → 200" "200" "$s"
+  expect "POST /api/test re-adds Cohiba Siglo VI (can_add=true) → 200" "200" "$s"
+  cigars_after=$(body GET "$BASE/api/cigars" "$SESSION")
+  if echo "$cigars_after" | grep -q '"Siglo VI"'; then
+    pass "Cohiba Siglo VI confirmed back in DB"
+  else
+    fail "Cohiba Siglo VI back in DB" "found" "not found"
+  fi
 else
   expect "POST /api/test (can_add=false) → 403" "403" "$s"
 fi
 
 # ─────────────────────────────────────────────
-section "AUTHENTICATED — can_delete permission (DELETE /api/cigars)"
+section "AUTHENTICATED — can_edit permission (PUT /api/cigars)"
 # ─────────────────────────────────────────────
 
-# Try deleting the test cigar we just created (if can_add succeeded)
-s=$(status DELETE "$BASE/api/cigars?brand=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$TEST_BRAND'))")&name=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$TEST_NAME'))")" "$SESSION")
-if [[ "$can_delete" == "true" ]]; then
-  expect "DELETE test cigar (can_delete=true) → 200" "200" "$s"
-  # Verify it's gone
-  cigars_after=$(body GET "$BASE/api/cigars" "$SESSION")
-  if echo "$cigars_after" | grep -q "$TEST_BRAND"; then
-    fail "Test cigar removed from DB" "not found" "still present"
-  else
-    pass "Test cigar confirmed removed from DB"
-  fi
-else
-  expect "DELETE /api/cigars (can_delete=false) → 403" "403" "$s"
-fi
+# Helper: extract a single field value for a specific cigar from the cigars JSON
+cigar_field() {
+  local brand="$1" name="$2" field="$3" json="$4"
+  echo "$json" | python3 -c "
+import json, sys
+cigars = json.load(sys.stdin)
+for c in cigars:
+    if c.get('brand') == '$brand' and c.get('name') == '$name':
+        print(c.get('$field', ''))
+        break
+"
+}
 
-# Try deleting a real cigar (should 200 or 403 based on perm)
-s=$(status DELETE "$BASE/api/cigars?brand=Cohiba&name=Siglo%20VI" "$SESSION")
-if [[ "$can_delete" == "true" ]]; then
-  expect "DELETE real cigar Cohiba Siglo VI (can_delete=true) → 200" "200" "$s"
-  echo -e "    ${yellow}NOTE: Cohiba Siglo VI was deleted — re-run seed script if needed${reset}"
+edited_payload=$(cat <<'EOF'
+{
+  "brand":"Cohiba","name":"Siglo VI",
+  "origin":"Cuba",
+  "wrapper":"Oscuro",
+  "profile":"Full",
+  "binder":"Nicaraguan",
+  "pressed":true,
+  "tasty_tip":true,
+  "spicy":9,
+  "rating":7,
+  "length":140,
+  "ring":48,
+  "review":"Edited review.",
+  "kyle_rating":6,
+  "kyle_review":"Kyle edited.",
+  "john_rating":7,
+  "john_review":"John edited.",
+  "image_ref":"https://example.com/test.jpg",
+  "authentic_human_review":"Authentic edited."
+}
+EOF
+)
+
+s=$(status PUT "$BASE/api/cigars" "$SESSION" "$edited_payload" "application/json")
+if [[ "$can_edit" == "true" ]]; then
+  expect "PUT /api/cigars (can_edit=true) → 200" "200" "$s"
+
+  cigars_json=$(body GET "$BASE/api/cigars" "$SESSION")
+
+  expect "origin=Cuba"                  "Cuba"                       "$(cigar_field Cohiba "Siglo VI" origin        "$cigars_json")"
+  expect "wrapper=Oscuro"               "Oscuro"                     "$(cigar_field Cohiba "Siglo VI" wrapper       "$cigars_json")"
+  expect "profile=Full"                 "Full"                       "$(cigar_field Cohiba "Siglo VI" profile       "$cigars_json")"
+  expect "binder=Nicaraguan"            "Nicaraguan"                 "$(cigar_field Cohiba "Siglo VI" binder        "$cigars_json")"
+  expect "pressed=True"                 "True"                       "$(cigar_field Cohiba "Siglo VI" pressed       "$cigars_json")"
+  expect "tasty_tip=True"               "True"                       "$(cigar_field Cohiba "Siglo VI" tasty_tip     "$cigars_json")"
+  expect "spicy=9"                      "9"                          "$(cigar_field Cohiba "Siglo VI" spicy         "$cigars_json")"
+  expect "rating=7"                     "7"                          "$(cigar_field Cohiba "Siglo VI" rating        "$cigars_json")"
+  expect "length=140"                   "140"                        "$(cigar_field Cohiba "Siglo VI" length        "$cigars_json")"
+  expect "ring=48"                      "48"                         "$(cigar_field Cohiba "Siglo VI" ring          "$cigars_json")"
+  expect "review=Edited review."        "Edited review."             "$(cigar_field Cohiba "Siglo VI" review        "$cigars_json")"
+  expect "kyle_rating=6"                "6"                          "$(cigar_field Cohiba "Siglo VI" kyle_rating   "$cigars_json")"
+  expect "kyle_review=Kyle edited."     "Kyle edited."               "$(cigar_field Cohiba "Siglo VI" kyle_review   "$cigars_json")"
+  expect "john_rating=7"                "7"                          "$(cigar_field Cohiba "Siglo VI" john_rating   "$cigars_json")"
+  expect "john_review=John edited."     "John edited."               "$(cigar_field Cohiba "Siglo VI" john_review   "$cigars_json")"
+  expect "image_ref set"                "https://example.com/test.jpg" "$(cigar_field Cohiba "Siglo VI" image_ref   "$cigars_json")"
+  expect "authentic_human_review set"   "Authentic edited."          "$(cigar_field Cohiba "Siglo VI" authentic_human_review "$cigars_json")"
+
+  # Delete the edited cigar
+  s=$(status DELETE "$BASE/api/cigars?brand=Cohiba&name=Siglo%20VI" "$SESSION")
+  if [[ "$can_delete" == "true" ]]; then
+    expect "DELETE edited Cohiba → 200" "200" "$s"
+  else
+    echo -e "    ${yellow}NOTE: can_delete=false — skipping delete/recreate, DB left with edited values${reset}"
+  fi
+
+  # Recreate with correct original values
+  if [[ "$can_delete" == "true" && "$can_add" == "true" ]]; then
+    restore_payload=$(cat <<'RESTORE'
+{"cigar_list":[{"brand":"Cohiba","name":"Siglo VI","origin":"","wrapper":"Cuban","profile":"Medium-Full","binder":"Cuban","pressed":false,"tasty_tip":false,"spicy":4,"rating":9,"length":150,"ring":52,"review":"The flagship of Cuban cigars. Creaminess and complexity in perfect balance — cedar, honey, and subtle spice. Burns slow and even with a tight white ash.","kyle_rating":0,"kyle_review":"","john_rating":0,"john_review":"","image_ref":"","authentic_human_review":""}]}
+RESTORE
+)
+    s=$(status POST "$BASE/api/test" "$SESSION" "$restore_payload" "application/json")
+    expect "Cohiba Siglo VI restored → 200" "200" "$s"
+    cigars_json=$(body GET "$BASE/api/cigars" "$SESSION")
+    expect "restored wrapper=Cuban"       "Cuban"        "$(cigar_field Cohiba "Siglo VI" wrapper "$cigars_json")"
+    expect "restored spicy=4"             "4"            "$(cigar_field Cohiba "Siglo VI" spicy   "$cigars_json")"
+    expect "restored rating=9"            "9"            "$(cigar_field Cohiba "Siglo VI" rating  "$cigars_json")"
+  fi
+
 else
-  expect "DELETE real cigar (can_delete=false) → 403" "403" "$s"
+  expect "PUT /api/cigars (can_edit=false) → 403" "403" "$s"
 fi
 
 # ─────────────────────────────────────────────
@@ -178,7 +266,7 @@ else
   expect "GET /api/admin/users (can_admin=false) → 403" "403" "$s"
 fi
 
-s=$(status POST "$BASE/api/admin/users" "$SESSION" '{"email":"noone@example.com","can_add":false,"can_delete":false,"can_admin":false}' "application/json")
+s=$(status POST "$BASE/api/admin/users" "$SESSION" '{"email":"noone@example.com","can_add":false,"can_edit":false,"can_delete":false,"can_admin":false}' "application/json")
 if [[ "$can_admin" == "true" ]]; then
   expect "POST /api/admin/users (can_admin=true) → 200" "200" "$s"
 else

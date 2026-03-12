@@ -6,21 +6,20 @@
     <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Personal-sites">
-    <meta name="description" content="Cigar review website">
-    <title>Cigarland</title>
-    <link rel="stylesheet" href="style.css?v=27">
+    <title>Cigarland — Add Cigar</title>
+    <link rel="stylesheet" href="style.css?v=28">
     <link rel="icon" href="pictures/favicon.ico" type="image/x-icon">
     <script>!function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t)}();</script>
 </head>
 <body>
+    <canvas id="bg-canvas"></canvas>
     <nav class="top-nav">
+        <button id="nav-hamburger" aria-label="Menu">&#9776;</button>
         <ul class="nav-list">
           <li><a href="/">Cigars</a></li>
           <li id="nav-add" style="display:none"><a href="/add_cigar">Add new cigar</a></li>
           <li id="nav-admin" style="display:none"><a href="/admin">Admin</a></li>
           <li id="nav-auth"><a href="/login">Login</a></li>
-
           <li>
             <label class="switch" title="Toggle dark mode">
               <input type="checkbox" id="themeSwitch">
@@ -28,71 +27,128 @@
             </label>
           </li>
         </ul>
-      </nav>
-       
-    <h1>Add to Cigar Review Journal</h1>   
-    <div id="add_cigar"></div>
-    <!-- Cigar submission form -->
-<form id="cigarForm">
-  <h2>Submit a New Cigar</h2>
-  <div>
-    <label>Brand: <input type="text" name="brand" required></label>
-    <label>Name: <input type="text" name="name" required></label>
-  </div>
-  <div>
-    <label>Origin: <input type="text" name="origin"></label>
-    <label>Wrapper: <input type="text" name="wrapper"></label>
-    <label>Binder: <input type="text" name="binder"></label>
-  </div>
-  <div>
-    <label>Profile: <input type="text" name="profile"></label>
-    <label>Pressed: <input type="checkbox" name="pressed"></label>
-    <label>Tasty Tip: <input type="checkbox" name="tasty_tip"></label>
-  </div>
-  <div>
-    <label>Spicy Level (0–10): <input type="number" name="spicy" min="0" max="10"></label>
-    <label>Rating (0–10): <input type="number" name="rating" min="0" max="10"></label>
-  </div>
-  <div>
-    <label>Kyle’s Rating: <input type="number" name="kyle_rating" min="0" max="10"></label>
-    <label>John’s Rating: <input type="number" name="john_rating" min="0" max="10"></label>
-  </div>
-  <div>
-    <label>Length (mm): <input type="number" name="length"></label>
-    <label>Ring Gauge: <input type="number" name="ring"></label>
-  </div>
-  <div>
-    <label>Image URL: <input type="text" name="image_ref"></label>
-  </div>
-  <div>
-    <label>Kyle’s Review:<br>
-      <textarea name="kyle_review" rows="2"></textarea>
-    </label>
-  </div>
-  <div>
-    <label>John’s Review:<br>
-      <textarea name="john_review" rows="2"></textarea>
-    </label>
-  </div>
-  <div>
-    <label>General Review:<br>
-      <textarea name="review" rows="2"></textarea>
-    </label>
-  </div>
-  <div>
-    <label>Authentic Human Review:<br>
-      <textarea name="authentic_human_review" rows="2"></textarea>
-    </label>
-  </div>
-  <button type="submit">Submit Cigar</button>
-</form>
+    </nav>
+
+    <div class="content">
+        <h1 class="page-title">Add a Cigar</h1>
+
+        <form id="cigarForm" class="cigar-form">
+
+            <section class="form-section">
+                <h2 class="form-section-title">Identity</h2>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="f-brand">Brand <span class="required">*</span></label>
+                        <input type="text" id="f-brand" name="brand" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="f-name">Name <span class="required">*</span></label>
+                        <input type="text" id="f-name" name="name" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="f-origin">Origin</label>
+                        <input type="text" id="f-origin" name="origin">
+                    </div>
+                    <div class="form-field">
+                        <label for="f-image">Image URL</label>
+                        <input type="text" id="f-image" name="image_ref">
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2 class="form-section-title">Construction</h2>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="f-wrapper">Wrapper</label>
+                        <select id="f-wrapper" name="wrapper">
+                            <option value="">Loading...</option>
+                        </select>
+                        <input type="text" id="f-wrapper-other" name="wrapper_other" placeholder="Enter wrapper" style="display:none; margin-top:0.4rem;">
+                    </div>
+                    <div class="form-field">
+                        <label for="f-binder">Binder</label>
+                        <input type="text" id="f-binder" name="binder">
+                    </div>
+                    <div class="form-field">
+                        <label for="f-profile">Profile</label>
+                        <input type="text" id="f-profile" name="profile" placeholder="e.g. Medium, Full">
+                    </div>
+                    <div class="form-field">
+                        <label for="f-spicy">Spicy Level (0–10)</label>
+                        <input type="number" id="f-spicy" name="spicy" min="0" max="10">
+                    </div>
+                    <div class="form-field">
+                        <label for="f-length">Length (mm)</label>
+                        <input type="number" id="f-length" name="length">
+                    </div>
+                    <div class="form-field">
+                        <label for="f-ring">Ring Gauge</label>
+                        <input type="number" id="f-ring" name="ring">
+                    </div>
+                </div>
+                <div class="form-checks">
+                    <label class="check-label">
+                        <input type="checkbox" name="pressed"> Pressed
+                    </label>
+                    <label class="check-label">
+                        <input type="checkbox" name="tasty_tip"> Tasty Tip
+                    </label>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2 class="form-section-title">Ratings</h2>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="f-kyle-rating">Kyle's Rating (0–10)</label>
+                        <input type="number" id="f-kyle-rating" name="kyle_rating" min="0" max="10">
+                    </div>
+                    <div class="form-field">
+                        <label for="f-john-rating">John's Rating (0–10)</label>
+                        <input type="number" id="f-john-rating" name="john_rating" min="0" max="10">
+                    </div>
+                    <div class="form-field">
+                        <label for="f-rating">Overall Rating (0–10)</label>
+                        <input type="number" id="f-rating" name="rating" min="0" max="10">
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2 class="form-section-title">Reviews</h2>
+                <div class="form-field">
+                    <label for="f-kyle-review">Kyle's Review</label>
+                    <textarea id="f-kyle-review" name="kyle_review" rows="3"></textarea>
+                </div>
+                <div class="form-field">
+                    <label for="f-john-review">John's Review</label>
+                    <textarea id="f-john-review" name="john_review" rows="3"></textarea>
+                </div>
+                <div class="form-field">
+                    <label for="f-review">General Review</label>
+                    <textarea id="f-review" name="review" rows="3"></textarea>
+                </div>
+                <div class="form-field">
+                    <label for="f-authentic">Authentic Human Review</label>
+                    <textarea id="f-authentic" name="authentic_human_review" rows="3"></textarea>
+                </div>
+            </section>
+
+            <div id="form-status"></div>
+            <button type="submit" class="submit-btn">Submit Cigar</button>
+
+        </form>
+    </div>
+
     <script src="js/dark_mode.js?v=1"></script>
     <script src="js/nav.js?v=1"></script>
+    <script src="js/bg_canvas.js?v=1"></script>
     <script>
       document.addEventListener('perms-loaded', () => {
         if (!window.userPerms.can_add) window.location.href = '/';
       });
     </script>
-    <script src="js/add_cigar.js?v=.01"></script>
+    <script src="js/add_cigar.js?v=.02"></script>
 </body>
 </html>

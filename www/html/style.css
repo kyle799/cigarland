@@ -7,14 +7,27 @@
   --card-border-color:  #aaaaaa;
 }
 [data-theme="dark"] {
-  /* Dark mode */
-  --bg-color:           rgb(34, 56, 56);
-  --text-color:         #f6f6f6;
-  --nav-bg:             rgb(46, 75, 75);
-  --link-hover:         #63979b;
-  --card-bg:            rgb(46, 75, 75);
-  --card-border-color:  #888888;
+  --bg-color:           #0d0d0d;
+  --text-color:         #e6e2dc;
+  --nav-bg:             #141414;
+  --link-hover:         #8ab5c8;
+  --card-bg:            #1c1c1c;
+  --card-border-color:  #262626;
 }
+#bg-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+[data-theme="dark"] #bg-canvas {
+  opacity: 1;
+}
+nav, .content, .login-form, h1, h2 { position: relative; z-index: 1; }
+
 html, body { height: 100%; margin: .5rem; }
 body {
   background: var(--bg-color);
@@ -108,6 +121,45 @@ img.cigar-image {
     margin: 1rem auto;
   }
 }
+
+/* ── Hamburger ─────────────────────────────────── */
+#nav-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0 1rem;
+  line-height: 3.5rem;
+}
+@media (max-width: 640px) {
+  #nav-hamburger { display: block; }
+  .top-nav {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 3.5rem;
+    padding: 0;
+  }
+  .nav-list {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    gap: 0;
+    margin: 0;
+    padding: 0.5rem 0;
+    background: var(--nav-bg);
+    border-top: 1px solid var(--card-border-color);
+  }
+  .top-nav.nav-open .nav-list { display: flex; }
+  .nav-list li {
+    padding: 0.5rem 1.5rem;
+  }
+  .nav-list label.switch {
+    margin: 0.25rem 0;
+  }
+}
 .cigar-card > summary {
   list-style: none;
   cursor: pointer;
@@ -178,6 +230,18 @@ img.cigar-image {
 .login-form button:hover {
   filter: brightness(0.9);
 }
+.edit-btn {
+  margin-top: .75rem;
+  margin-right: .5rem;
+  padding: .4rem .9rem;
+  background: #2e6da4;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.edit-btn:hover { filter: brightness(0.85); }
 .delete-btn {
   margin-top: .75rem;
   padding: .4rem .9rem;
@@ -192,3 +256,108 @@ img.cigar-image {
 table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
 th, td { padding: .5rem 1rem; border: 1px solid var(--card-border-color); text-align: left; }
 th { background: var(--nav-bg); }
+
+/* ── Add Cigar Form ────────────────────────────── */
+.page-title {
+  margin: 2rem 0 1.5rem;
+  font-size: 1.5rem;
+}
+.cigar-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 720px;
+  padding-bottom: 3rem;
+}
+.form-section {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: 6px;
+  padding: 1.25rem 1.5rem;
+}
+.form-section-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--link-hover);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--card-border-color);
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1.25rem;
+}
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.form-field label {
+  font-size: 0.78rem;
+  color: var(--text-color);
+  opacity: 0.7;
+}
+.form-field select,
+.form-field input,
+.form-field textarea {
+  background: var(--bg-color);
+  border: 1px solid var(--card-border-color);
+  border-radius: 4px;
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.65rem;
+  width: 100%;
+  resize: vertical;
+  transition: border-color 0.15s;
+}
+.form-field select:focus,
+.form-field input:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: var(--link-hover);
+}
+.form-checks {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+}
+.check-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.check-label input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--link-hover);
+  cursor: pointer;
+}
+.required { color: var(--link-hover); }
+.submit-btn {
+  align-self: flex-start;
+  padding: 0.6rem 2rem;
+  background: var(--link-hover);
+  color: var(--bg-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.submit-btn:hover { filter: brightness(0.88); }
+#form-status {
+  font-size: 0.875rem;
+  padding: 0.5rem 0;
+  min-height: 1.5rem;
+}
+#form-status.success { color: #6abf8a; }
+#form-status.error   { color: #e07070; }
+@media (max-width: 540px) {
+  .form-grid { grid-template-columns: 1fr; }
+}

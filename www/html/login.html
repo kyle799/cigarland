@@ -12,7 +12,9 @@
     <script>!function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t)}();</script>
 </head>
 <body>
+    <canvas id="bg-canvas"></canvas>
     <nav class="top-nav">
+        <button id="nav-hamburger" aria-label="Menu">&#9776;</button>
         <ul class="nav-list">
             <li><a href="/">Cigars</a></li>
             <li id="nav-auth"></li>
@@ -34,5 +36,6 @@
 
     <script src="js/dark_mode.js?v=1"></script>
     <script src="js/nav.js?v=1"></script>
+    <script src="js/bg_canvas.js?v=1"></script>
 </body>
 </html>

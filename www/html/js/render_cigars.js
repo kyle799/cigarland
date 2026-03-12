@@ -18,13 +18,13 @@ async function loadCigars() {
     const cigars = await cigarsRes.json();
     const me = meRes.ok ? await meRes.json() : {};
     console.log(cigars[0]);
-    renderCigars(cigars, me.can_delete);
+    renderCigars(cigars, me.can_delete, me.can_edit);
   } catch (err) {
     console.error('Fetch failed:', err);
   }
 }
 
-function renderCigars(cigars, canDelete) {
+function renderCigars(cigars, canDelete, canEdit) {
   section.innerHTML = '';
   cigars.forEach(cigar => {
     const details = document.createElement("details");
@@ -57,6 +57,15 @@ function renderCigars(cigars, canDelete) {
         <p><strong>Authentic Human Review:</strong>
            ${cigar.authentic_human_review || "No review yet."}</p>
     `;
+    if (canEdit) {
+      const btn = document.createElement("button");
+      btn.textContent = "Edit";
+      btn.className = "edit-btn";
+      btn.onclick = () => {
+        window.location.href = `/add_cigar?brand=${encodeURIComponent(cigar.brand)}&name=${encodeURIComponent(cigar.name)}`;
+      };
+      body.appendChild(btn);
+    }
     if (canDelete) {
       const btn = document.createElement("button");
       btn.textContent = "Delete";
