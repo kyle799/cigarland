@@ -244,3 +244,106 @@ img.cigar-image {
 table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
 th, td { padding: .5rem 1rem; border: 1px solid var(--card-border-color); text-align: left; }
 th { background: var(--nav-bg); }
+
+/* ── Add Cigar Form ────────────────────────────── */
+.page-title {
+  margin: 2rem 0 1.5rem;
+  font-size: 1.5rem;
+}
+.cigar-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 720px;
+  padding-bottom: 3rem;
+}
+.form-section {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: 6px;
+  padding: 1.25rem 1.5rem;
+}
+.form-section-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--link-hover);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--card-border-color);
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1.25rem;
+}
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.form-field label {
+  font-size: 0.78rem;
+  color: var(--text-color);
+  opacity: 0.7;
+}
+.form-field input,
+.form-field textarea {
+  background: var(--bg-color);
+  border: 1px solid var(--card-border-color);
+  border-radius: 4px;
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.65rem;
+  width: 100%;
+  resize: vertical;
+  transition: border-color 0.15s;
+}
+.form-field input:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: var(--link-hover);
+}
+.form-checks {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+}
+.check-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.check-label input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--link-hover);
+  cursor: pointer;
+}
+.required { color: var(--link-hover); }
+.submit-btn {
+  align-self: flex-start;
+  padding: 0.6rem 2rem;
+  background: var(--link-hover);
+  color: var(--bg-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.submit-btn:hover { filter: brightness(0.88); }
+#form-status {
+  font-size: 0.875rem;
+  padding: 0.5rem 0;
+  min-height: 1.5rem;
+}
+#form-status.success { color: #6abf8a; }
+#form-status.error   { color: #e07070; }
+@media (max-width: 540px) {
+  .form-grid { grid-template-columns: 1fr; }
+}
